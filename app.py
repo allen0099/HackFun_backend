@@ -1,8 +1,9 @@
 from flask import Flask, redirect, make_response, jsonify
+from flask_cors import CORS
 
-from api import api as bp_api
+from blueprints.api import api as bp_api
+from blueprints.login import login as bp_login, login_manager
 from database import db
-from login import login as bp_login, login_manager
 
 app = Flask(__name__)
 app.secret_key = b'(ML\x90\x13\xcd\xaev\xa0 \x1d\x1fC\xab\xb7\x05'
@@ -19,6 +20,8 @@ login_manager.init_app(app)
 # import blueprints to flask
 app.register_blueprint(bp_api)
 app.register_blueprint(bp_login)
+
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
 @app.route('/')
