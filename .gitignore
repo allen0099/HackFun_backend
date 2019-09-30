@@ -1,5 +1,7 @@
 # Project relative file ignore
 my-db
+# Don't know how to write auto test, so ignore those file
+tests/
 credentials.ini
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
