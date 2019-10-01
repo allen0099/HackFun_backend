@@ -85,7 +85,7 @@ def root_topic():
         return jsonify({
             "ok": False,
             "result": "can not pass both arguments in one query"
-        })
+        }), 400
 
     if tid is not None:
         search = Topic.search(tid=tid)
