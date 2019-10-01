@@ -28,9 +28,8 @@ login_manager = LoginManager()
 
 @login_manager.user_loader
 def load_user(uid):
-    # TODO fix not return uid, instead of user object
-    a = User.get_user(uid)
-    return a
+    # return user, not str
+    return User.get(uid)
 
 
 @login.route("/test")
@@ -122,7 +121,7 @@ def _callback():
 
         print(userinfo_response.json())
 
-        User.add_user(unique_id, users_name, users_email, picture)
+        User.add(unique_id, users_name, users_email, picture)
 
         user = User(unique_id, users_name, users_email, picture)
         login_user(user)

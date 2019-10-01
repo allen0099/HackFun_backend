@@ -32,7 +32,7 @@ class User(db.Model, UserMixin):
         }
 
     @staticmethod
-    def add_user(user_id: str, name: str, email: str, pic: str) -> None:
+    def add(user_id: str, name: str, email: str, pic: str) -> None:
         check = User.query.filter_by(id=user_id).first()
         if check is None:
             db.session.add(User(user_id, name, email, pic))
@@ -40,21 +40,17 @@ class User(db.Model, UserMixin):
         return None
 
     @staticmethod
-    def get_user(uid) -> Union[str, None]:
-        print("getting id")
+    def get(uid: str) -> Union[str, None]:
         user = User.query.filter_by(id=uid).first()
         if user is None:
             return None
-        user = User.to_dict(user)
         user = User(
-            id_=user["id"], name=user["name"], email=user["email"], profile_pic=user["profile pic"]
+            id_=user.id,
+            name=user.name,
+            email=user.email,
+            profile_pic=user.profile_pic
         )
         return user
-
-    @staticmethod
-    def search(uid: str) -> str:
-        # TODO implement function
-        pass
 
 
 class Course(db.Model):
@@ -81,18 +77,20 @@ class Course(db.Model):
         else:
             db.session.add(Course(name=name, info=info))
         db.session.commit()
-        return Course.search(name)[0]["id"]
+        return Course.get(name)["id"]
 
     @staticmethod
-    def search(item: str = None) -> Union[list, None]:
+    def get(item: str = None) -> Union[dict, list, None]:
         if item is None:
             course = Course.query.all()
+            if not course:
+                return None
+            return [Course.to_dict(cs) for cs in course]
         else:
-            course = Course.query.filter_by(name=item).all()
-        course_list = [Course.to_dict(cs) for cs in course]
-        if len(course_list) == 0:
-            return None
-        return course_list
+            course = Course.query.filter_by(name=item).first()
+            if not course:
+                return None
+            return course.to_dict()
 
 
 class Class(db.Model):
@@ -115,13 +113,12 @@ class Class(db.Model):
         }
 
     @staticmethod
-    def search(course: str) -> Union[list, None]:
-        c = Course.search(course)
+    def get(course: str) -> Union[list, None]:
+        c = Course.get(course)
         if c is None:
             return None
-        css = Class.query.filter_by(course=course).all()
-        css = [Class.to_dict(cs) for cs in css]
-        return css
+        return [Class.to_dict(cs)
+                for cs in Class.query.filter_by(course=course).all()]
 
 
 class Topic(db.Model):
@@ -139,14 +136,14 @@ class Topic(db.Model):
     def to_dict(self) -> dict:
         return {
             "id": self.id,
-            "belong to": self.belong_to,
+            "belong_to": self.belong_to,
             "name": self.name,
             "description": self.description,
             "type": self.type
         }
 
     @staticmethod
-    def search(tid: int = None, course: str = None) -> Union[list, dict, None]:
+    def get(tid: int = None, course: str = None) -> Union[list, dict, None]:
         if tid is not None:
             topic = Topic.query.filter_by(id=tid).first()
             if topic is None:

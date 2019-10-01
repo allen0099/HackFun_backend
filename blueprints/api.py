@@ -14,7 +14,7 @@ def course_root():
     return jsonify({
         "ok": True,
         "result": {
-            "course": Course.search()
+            "course": Course.get()
         }
     })
 
@@ -42,8 +42,8 @@ def post_course():
             "result": "name empty"
         }), 400
 
-    check_query = Course.search(name)  # return list object
-    if check_query is not None:  # means this is not return null, has something
+    check_query = Course.get(name)  # return list object
+    if check_query is not None:  # duplicated
         return jsonify({
             "ok": False,
             "result": "Course duplicate"
@@ -52,7 +52,7 @@ def post_course():
     Course.add(name, info)
     return jsonify({
         "ok": True,
-        "result": Course.search(name)[0]
+        "result": Course.get(name)
     })
 
 
@@ -62,7 +62,7 @@ def get_course(course):
     Search the course in the database
     :return all class in the course
     """
-    find = Class.search(course)
+    find = Class.get(course)
 
     if find is None:
         return abort(404)
@@ -70,7 +70,7 @@ def get_course(course):
     return jsonify({
         "ok": True,
         "result": {
-            "course": Course.search(course)[0],
+            "course": Course.get(course),
             "classes": find
         }
     })
@@ -88,7 +88,7 @@ def root_topic():
         }), 400
 
     if tid is not None:
-        search = Topic.search(tid=tid)
+        search = Topic.get(tid=tid)
         if search is None:
             return abort(404)
         return jsonify({
@@ -97,7 +97,7 @@ def root_topic():
         })
 
     if course is not None:
-        search = Topic.search(course=course)
+        search = Topic.get(course=course)
         if search is None:
             return abort(404)
         return jsonify({
@@ -107,5 +107,5 @@ def root_topic():
 
     return jsonify({
         "ok": True,
-        "result": Topic.search()
+        "result": Topic.get()
     })
