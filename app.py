@@ -39,6 +39,13 @@ def create_app(config_file=None) -> Flask:
     def root():
         return redirect("/api")
 
+    @app.errorhandler(401)
+    def unauthorized(error):
+        return make_response(jsonify({
+            "error": "Unauthorized",
+            "reason": error.get_description()[3:-4]
+        }), 401)
+
     @app.errorhandler(404)
     def not_found(error):
         return make_response(jsonify({

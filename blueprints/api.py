@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request, abort
+from flask_login import login_required
 
 from database import Course, Class, Topic
 
@@ -20,12 +21,11 @@ def course_root():
 
 
 @api.route('/course', methods=['POST'])
+@login_required
 def post_course():
     """
     Add a new course to the database
     """
-    # TODO Need auth
-
     content = request.json
     name = content.get("name")
     info = content.get("info")
