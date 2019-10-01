@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+# TODO: record database changed (timestamp, user)
 
 class User(db.Model, UserMixin):
     __tablename__ = "user"
