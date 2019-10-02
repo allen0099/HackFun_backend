@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 from typing import Union
 
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+
 
 # TODO: record database changed (timestamp, user)
 
@@ -33,25 +36,40 @@ class User(db.Model, UserMixin):
         }
 
     @staticmethod
-    def add(user_id: str, name: str, email: str, pic: str) -> None:
-        check = User.query.filter_by(id=user_id).first()
-        if check is None:
-            db.session.add(User(user_id, name, email, pic))
-            db.session.commit()
-        return None
+    def update(user_id: str, name: str, email: str, pic: str) -> Union[str, None]:
+        user = User.get(user_id)
+        if user is None:
+            return "UserNotFound"
+        User.query.filter_by(id=user_id) \
+            .update(dict(name=name,
+                         email=email,
+                         profile_pic=pic))
+        db.session.commit()
 
     @staticmethod
-    def get(uid: str) -> Union[str, None]:
+    def add(user_id: str, name: str, email: str, pic: str) -> Union[None, str]:
+        check = User.query.filter_by(id=user_id).first()
+        if check is None:
+            db.session.add(User(user_id,
+                                name,
+                                email,
+                                pic))
+            db.session.commit()
+            return user_id
+        else:
+            return check.id
+
+    @staticmethod
+    def get(uid: str) -> Union[User, None]:
         user = User.query.filter_by(id=uid).first()
         if user is None:
             return None
-        user = User(
+        return User(
             id_=user.id,
             name=user.name,
             email=user.email,
             profile_pic=user.profile_pic
         )
-        return user
 
 
 class Course(db.Model):

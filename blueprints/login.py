@@ -119,14 +119,16 @@ def _callback():
         picture = userinfo_response.json()["picture"]
         users_name = userinfo_response.json()["given_name"]
 
-        print(userinfo_response.json())
+        # update user's data each time user login
+        if User.get(unique_id) is None:
+            User.add(unique_id, users_name, users_email, picture)
+        else:
+            User.update(unique_id, users_name, users_email, picture)
 
-        User.add(unique_id, users_name, users_email, picture)
-
+        # Login user
         user = User(unique_id, users_name, users_email, picture)
         login_user(user)
-        # TODO update user database if the new data is in
-        print("login success")
+
         return redirect(url_for("login.index"))
     else:
         return "User email not available or not verified by Google.", 400
