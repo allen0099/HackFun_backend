@@ -1,5 +1,9 @@
-import os
+import configparser
 
 from app import create_app
 
-app = create_app(os.getenv('FLASK_CONFIG') or 'default')
+config = configparser.ConfigParser()
+config.read("app/credentials.ini")
+FLASK_CONFIG = config["Flask"].get("config")
+
+app = create_app(FLASK_CONFIG or 'default')
