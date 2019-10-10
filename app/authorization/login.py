@@ -2,13 +2,12 @@ import configparser
 import json
 
 import requests
-from flask import Blueprint, request, redirect, url_for, abort
+from flask import request, redirect, url_for, abort
 from flask_login import current_user, login_required, logout_user, login_user, LoginManager
 from oauthlib.oauth2 import WebApplicationClient
 
-from database import User
-
-login = Blueprint("login", __name__)
+from app.authorization import authorized
+from app.models import User
 
 # parse the config and pass them as Google credentials
 config = configparser.ConfigParser()
@@ -32,7 +31,7 @@ def load_user(uid):
     return User.get(uid)
 
 
-@login.route("/test")
+@authorized.route("/test")
 def index():
     print(current_user)
     if current_user.is_authenticated:
@@ -59,7 +58,7 @@ def get_google_provider_cfg():
         return abort(500, "Can't connect to Google now")
 
 
-@login.route("/login")
+@authorized.route("/login")
 def _login():
     # Find out what URL to hit for Google login
     google_provider_cfg = get_google_provider_cfg()
@@ -76,7 +75,7 @@ def _login():
     return redirect(request_uri)
 
 
-@login.route("/login/callback")
+@authorized.route("/login/callback")
 def _callback():
     # Get authorization code Google sent back to you
     code = request.args.get("code")
@@ -134,7 +133,7 @@ def _callback():
         return "User email not available or not verified by Google.", 400
 
 
-@login.route("/logout")
+@authorized.route("/logout")
 @login_required
 def logout():
     logout_user()

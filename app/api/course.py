@@ -1,9 +1,8 @@
-from flask import Blueprint, jsonify, request, abort
+from flask import jsonify, request, abort
 from flask_login import login_required
 
-from database import Course, Class, Topic
-
-api = Blueprint('api', __name__, url_prefix="/api")
+from app.api import api
+from app.models import Course, Class, Topic
 
 
 @api.route('/course')
@@ -20,7 +19,7 @@ def course_root():
     })
 
 
-@api.route('/course', methods=['POST'])
+@api.route("/course", methods=['POST'])
 @login_required
 def post_course():
     """

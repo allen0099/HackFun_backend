@@ -3,15 +3,15 @@ from __future__ import annotations
 from typing import Union
 
 from flask_login import UserMixin
-from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
+from app import db
 
 
 # TODO: record database changed (timestamp, user)
 
+
 class User(db.Model, UserMixin):
-    __tablename__ = "user"
+    __tablename__ = "users"
 
     def __init__(self, id_: str, name: str, email: str, profile_pic: str) -> None:
         self.id = id_
@@ -27,7 +27,7 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f"<User {self.id}>"
 
-    def to_dict(self) -> dict:
+    def to_json(self) -> dict:
         return {
             "id": self.id,
             "name": self.name,
