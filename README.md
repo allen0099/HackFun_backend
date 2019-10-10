@@ -24,10 +24,15 @@ python3.7 -m venv venv
 source venv/bin/activate
 # install requirements.txt
 pip install -r requirements.txt
+# start the server
+chmod +x startFlaskServer.sh
+./startFlaskServer.sh
 ```
 
 recommend using PyCharm for IDE  
-plugins: [Git Commit Template](https://plugins.jetbrains.com/plugin/9861-git-commit-template/)
+plugins:  
+[Git Commit Template](https://plugins.jetbrains.com/plugin/9861-git-commit-template/)  
+[GitToolBox](https://plugins.jetbrains.com/plugin/index?xmlId=zielu.gittoolbox)
 
 ### Contribute
 
