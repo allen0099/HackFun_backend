@@ -14,11 +14,12 @@ def create_app(config_name):
 
     db.init_app(app)
 
-    # import blueprints to flask
-    from .api import api as bp_api
-    app.register_blueprint(bp_api)
-    from .authorization import authorized as bp_authorize
-    app.register_blueprint(bp_authorize)
+    if config_name != "test":
+        # import blueprints to flask
+        from .api import api as bp_api
+        app.register_blueprint(bp_api)
+        from .authorization import authorized as bp_authorize
+        app.register_blueprint(bp_authorize)
 
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
