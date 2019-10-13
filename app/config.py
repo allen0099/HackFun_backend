@@ -18,7 +18,7 @@ class TestConfig(Config):
 
 class DevelopmentConfig(Config):
     SECRET_KEY: str = b'(ML\x90\x13\xcd\xaev\xa0 \x1d\x1fC\xab\xb7\x05'
-    SQLALCHEMY_DATABASE_URI: str = "mysql://root:meowmeow@127.0.0.1:32769/testdb"
+    SQLALCHEMY_DATABASE_URI: str = "mysql://root:meowmeow@127.0.0.1:32769/develop"
 
 
 class ProductionConfig(Config):
