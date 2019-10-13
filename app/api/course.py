@@ -1,16 +1,11 @@
 from flask import jsonify, request, abort
-from flask_login import login_required
 
 from app.api import api
-from app.models import Course, Class, Topic
+from app.models import Course, Class
 
 
 @api.route('/course')
-def course_root():
-    """
-    Show all course in json format
-    :return all course list
-    """
+def root_course():
     return jsonify({
         "ok": True,
         "result": {
@@ -20,7 +15,6 @@ def course_root():
 
 
 @api.route("/course", methods=['POST'])
-@login_required
 def post_course():
     """
     Add a new course to the database
@@ -72,39 +66,4 @@ def get_course(course):
             "course": Course.get(course),
             "classes": find
         }
-    })
-
-
-@api.route('/topic', methods=['GET'])
-def root_topic():
-    tid = request.args.get("tid")
-    course = request.args.get("course")
-
-    if tid is not None and course is not None:
-        return jsonify({
-            "ok": False,
-            "result": "can not pass both arguments in one query"
-        }), 400
-
-    if tid is not None:
-        search = Topic.get(tid=tid)
-        if search is None:
-            return abort(404)
-        return jsonify({
-            "ok": True,
-            "result": search
-        })
-
-    if course is not None:
-        search = Topic.get(course=course)
-        if search is None:
-            return abort(404)
-        return jsonify({
-            "ok": True,
-            "result": search
-        })
-
-    return jsonify({
-        "ok": True,
-        "result": Topic.get()
     })
