@@ -11,4 +11,4 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: meowmeow
     volumes:
-      - ./my-db:/var/lib/mysql
+      - ../my-db:/var/lib/mysql
