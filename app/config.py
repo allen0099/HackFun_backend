@@ -1,3 +1,6 @@
+import configparser
+
+
 class Config:
     JSON_SORT_KEYS: bool = False
 
@@ -22,7 +25,10 @@ class DevelopmentConfig(Config):
 
 
 class ProductionConfig(Config):
-    pass
+    config = configparser.ConfigParser()
+    config.read("credentials.ini")
+    SECRET_KEY = config['Flask']['secretKey']
+    SQLALCHEMY_DATABASE_URI: str = "mysql://root:meowmeow@127.0.0.1:32769/production"
 
 
 config = {
