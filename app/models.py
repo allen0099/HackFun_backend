@@ -98,9 +98,7 @@ class Topic(db.Model):
         }
 
     def get_uuid(self):
-        return {
-            "uuid": self.uuid
-        }
+        return self.uuid
 
 
 class TopicChoose(db.Model):

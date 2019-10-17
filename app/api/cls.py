@@ -28,7 +28,7 @@ def get_class(course):
     return jsonify({
         "ok": True,
         "result": {
-            "course": [Class.to_dict(c) for c in q.classes.all()]
+            "classes": [Class.to_dict(c) for c in q.classes.all()]
         }
     })
 
