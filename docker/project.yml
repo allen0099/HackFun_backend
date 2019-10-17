@@ -12,3 +12,4 @@ services:
       MYSQL_ROOT_PASSWORD: meowmeow
     volumes:
       - ../my-db:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/custom.sql
