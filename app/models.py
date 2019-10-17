@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import uuid
 from typing import Union
 
 from flask_login import UserMixin
@@ -7,7 +8,141 @@ from flask_login import UserMixin
 from app import db
 
 
-# TODO: record database changed (timestamp, user)
+def generateUUID(prefix: str = "") -> str:
+    return prefix + str(uuid.uuid4())
+
+
+class Course(db.Model):
+    __tablename__ = "courses"
+
+    id = db.Column(db.Integer,
+                   primary_key=True)
+    name = db.Column(db.String(255),
+                     unique=True)
+    info = db.Column(db.Text)
+    # backref means you can use Class.backref to find Course
+    classes = db.relationship("Class",
+                              backref="course",
+                              lazy="dynamic")
+
+    def __repr__(self):
+        return "<Course %r>" % self.name
+
+    def to_dict(self) -> dict:
+        return {
+            "name": self.name,
+            "info": self.info
+        }
+
+
+class Class(db.Model):
+    __tablename__ = "classes"
+
+    id = db.Column(db.Integer,
+                   primary_key=True)
+    # belong to which course
+    belong = db.Column(db.String(255),
+                       db.ForeignKey("courses.name"))
+    name = db.Column(db.String(255),
+                     unique=True)
+    info = db.Column(db.Text)
+
+    # provide backref for topic
+    topics = db.relationship("Topic",
+                             backref="class",
+                             lazy="dynamic")
+
+    def __repr__(self):
+        return "<Class %r>" % self.name
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "info": self.info,
+            "topics": {
+                "topic_count": len(self.topics.all()),
+                "topics_uuid": [Topic.get_uuid(uuid) for uuid in self.topics.all()]
+            }
+        }
+
+
+class Topic(db.Model):
+    __tablename__ = "topics"
+
+    id = db.Column(db.Integer,
+                   primary_key=True)
+    uuid = db.Column(db.String(64),
+                     default=generateUUID("topic-"),
+                     unique=True,
+                     nullable=False)
+    # belong to which class
+    belong = db.Column(db.Integer,
+                       db.ForeignKey("classes.id"))
+    name = db.Column(db.Text)
+    description = db.Column(db.Text)
+    type = db.Column(db.String(20))
+
+    # provide backref for types
+    classes = db.relationship("TopicChoose",
+                              backref="topic",
+                              lazy="dynamic")
+
+    def __repr__(self):
+        return "<Topic %r>" % self.name
+
+    def to_dict(self):
+        return {
+            "uuid": self.uuid,
+            "name": self.name,
+            "description": self.description
+        }
+
+    def get_uuid(self):
+        return {
+            "uuid": self.uuid
+        }
+
+
+class TopicChoose(db.Model):
+    __tablename__ = "topic_choose"
+
+    id = db.Column(db.Integer,
+                   primary_key=True)
+    # belong to which topic
+    belong_to = db.Column(db.Integer,
+                          db.ForeignKey("topics.id"))
+    choose_count = db.Column(db.Integer())
+    can_multiple = db.Column(db.Boolean)
+    ans = db.Column(db.Text)
+    chosen_1 = db.Column(db.Text)
+    chosen_2 = db.Column(db.Text)
+    chosen_3 = db.Column(db.Text)
+    chosen_4 = db.Column(db.Text)
+    chosen_5 = db.Column(db.Text)
+    chosen_6 = db.Column(db.Text)
+    chosen_7 = db.Column(db.Text)
+    chosen_8 = db.Column(db.Text)
+    chosen_9 = db.Column(db.Text)
+    chosen_10 = db.Column(db.Text)
+
+    def __repr__(self):
+        return "<Topic_Choose %r>" % self.id
+
+
+class TopicDocker(db.Model):
+    __tablename__ = "topic_docker"
+
+    id = db.Column(db.Integer,
+                   primary_key=True)
+    # belong to which topic
+    belong_to = db.Column(db.Integer,
+                          db.ForeignKey("topics.id"))
+    docker_url = db.Column(db.Text)
+    docker_flag = db.Column(db.Text)
+    docker_image = db.Column(db.Text)
+
+    def __repr__(self):
+        return "<Topic %r>" % self.id
 
 
 class User(db.Model, UserMixin):
@@ -19,10 +154,20 @@ class User(db.Model, UserMixin):
         self.email = email
         self.profile_pic = profile_pic
 
-    id: str = db.Column(db.CHAR(200), nullable=False, primary_key=True)
-    name: str = db.Column(db.CHAR(200), nullable=False, unique=False)
-    email: str = db.Column(db.CHAR(200), nullable=False, unique=True)
-    profile_pic: str = db.Column(db.CHAR(200), nullable=False, unique=False)
+    id: str = db.Column(
+        db.String(30),
+        primary_key=True
+    )
+    name: str = db.Column(
+        db.String(255)
+    )
+    email: str = db.Column(
+        db.String(255),
+        unique=True
+    )
+    profile_pic: str = db.Column(
+        db.String(255)
+    )
 
     def __repr__(self):
         return f"<User {self.id}>"
@@ -70,110 +215,3 @@ class User(db.Model, UserMixin):
             email=user.email,
             profile_pic=user.profile_pic
         )
-
-
-class Course(db.Model):
-    __tablename__ = "course"
-
-    id: int = db.Column(db.Integer, nullable=False, primary_key=True, autoincrement=True)
-    name: str = db.Column(db.CHAR(255), nullable=False, unique=True)
-    info: str = db.Column(db.TEXT, nullable=True, unique=False)
-
-    def __repr__(self) -> str:
-        return "<Course %r>" % self.name
-
-    def to_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "info": self.info
-        }
-
-    @staticmethod
-    def add(name: str, info: str, cid: int = None) -> int:
-        if cid is not None:
-            db.session.add(Course(id=cid, name=name, info=info))
-        else:
-            db.session.add(Course(name=name, info=info))
-        db.session.commit()
-        return Course.get(name)["id"]
-
-    @staticmethod
-    def get(item: str = None) -> Union[dict, list, None]:
-        if item is None:
-            course = Course.query.all()
-            if not course:
-                return None
-            return [Course.to_dict(cs) for cs in course]
-        else:
-            course = Course.query.filter_by(name=item).first()
-            if not course:
-                return None
-            return course.to_dict()
-
-
-class Class(db.Model):
-    __tablename__ = "class"
-
-    id: int = db.Column(db.Integer, nullable=False, primary_key=True, autoincrement=True)
-    course: str = db.Column(db.TEXT, nullable=False, unique=False)
-    name: str = db.Column(db.TEXT, nullable=False, unique=False)
-    info: str = db.Column(db.TEXT, nullable=False, unique=False)
-
-    def __repr__(self) -> str:
-        return "<Class %r>" % self.name
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "course": self.course,
-            "name": self.name,
-            "info": self.info
-        }
-
-    @staticmethod
-    def get(course: str) -> Union[list, None]:
-        c = Course.get(course)
-        if c is None:
-            return None
-        return [Class.to_dict(cs)
-                for cs in Class.query.filter_by(course=course).all()]
-
-
-class Topic(db.Model):
-    __tablename__ = "topic"
-
-    id = db.Column(db.Integer, nullable=False, primary_key=True, autoincrement=True)
-    belong_to = db.Column(db.TEXT, nullable=False, unique=False)
-    name = db.Column(db.TEXT, nullable=False, unique=False)
-    description = db.Column(db.TEXT, nullable=False, unique=False)
-    type = db.Column(db.TEXT, nullable=False, unique=False)
-
-    def __repr__(self):
-        return "<Topic %r>" % self.name
-
-    def to_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "belong_to": self.belong_to,
-            "name": self.name,
-            "description": self.description,
-            "type": self.type
-        }
-
-    @staticmethod
-    def get(tid: int = None, course: str = None) -> Union[list, dict, None]:
-        if tid is not None:
-            topic = Topic.query.filter_by(id=tid).first()
-            if topic is None:
-                return None
-            return topic.to_dict()
-        if course is not None:
-            topic = Topic.query.filter_by(belong_to=course).all()
-            if not topic:
-                return None
-            return [Topic.to_dict(cs) for cs in topic]
-
-        # none of above triggered, return all query
-        topic = Topic.query.all()
-        return [Topic.to_dict(cs) for cs in topic]

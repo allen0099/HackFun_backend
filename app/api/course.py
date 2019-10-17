@@ -1,69 +1,25 @@
-from flask import jsonify, request, abort
+from flask import jsonify, redirect, url_for
 
 from app.api import api
-from app.models import Course, Class
+from app.models import Course
 
 
-@api.route('/course')
+@api.route("/course")
 def root_course():
+    course = Course.query.all()
+    if not course:
+        return jsonify({
+            "ok": False,
+            "result": "No course found"
+        }), 404
     return jsonify({
         "ok": True,
         "result": {
-            "course": Course.get()
+            "course": [Course.to_dict(c) for c in course]
         }
     })
 
 
-@api.route("/course", methods=['POST'])
-def post_course():
-    """
-    Add a new course to the database
-    """
-    content = request.json
-    name = content.get("name")
-    info = content.get("info")
-
-    if name is None or info is None:
-        return jsonify({
-            "ok": False,
-            "result": "name or info not supply"
-        }), 400
-
-    if name == "":
-        return jsonify({
-            "ok": False,
-            "result": "name empty"
-        }), 400
-
-    check_query = Course.get(name)  # return list object
-    if check_query is not None:  # duplicated
-        return jsonify({
-            "ok": False,
-            "result": "Course duplicate"
-        }), 400
-
-    Course.add(name, info)
-    return jsonify({
-        "ok": True,
-        "result": Course.get(name)
-    })
-
-
-@api.route('/course/<string:course>', methods=['GET'])
-def get_course(course):
-    """
-    Search the course in the database
-    :return all class in the course
-    """
-    find = Class.get(course)
-
-    if find is None:
-        return abort(404)
-
-    return jsonify({
-        "ok": True,
-        "result": {
-            "course": Course.get(course),
-            "classes": find
-        }
-    })
+@api.route("/course/")
+def redirect_root():
+    return redirect(url_for("api.root_course"))

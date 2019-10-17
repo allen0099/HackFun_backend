@@ -1,39 +1,36 @@
-from flask import request, jsonify, abort
+from flask import jsonify, redirect, url_for
 
 from app.api import api
 from app.models import Topic
 
 
-@api.route('/topic', methods=['GET'])
+@api.route("/topic")
 def root_topic():
-    tid = request.args.get("tid")
-    course = request.args.get("course")
+    return jsonify({
+        "ok": False,
+        "result": "Should pass topic's uuid"
+    }), 404
 
-    if tid is not None and course is not None:
+
+@api.route("/topic/")
+def redirect_topic():
+    return redirect(url_for("api.root_topic"))
+
+
+@api.route("/topic/<string:topic>")
+def get_topic(topic):
+    q = Topic.query.filter_by(uuid=topic).first()
+    if q is None:
         return jsonify({
             "ok": False,
-            "result": "can not pass both arguments in one query"
-        }), 400
-
-    if tid is not None:
-        search = Topic.get(tid=tid)
-        if search is None:
-            return abort(404)
-        return jsonify({
-            "ok": True,
-            "result": search
-        })
-
-    if course is not None:
-        search = Topic.get(course=course)
-        if search is None:
-            return abort(404)
-        return jsonify({
-            "ok": True,
-            "result": search
-        })
-
+            "result": "Topic not found"
+        }), 404
     return jsonify({
         "ok": True,
-        "result": Topic.get()
+        "result": Topic.to_dict(q)
     })
+
+
+@api.route("/topic/<string:topic>/")
+def redirect_get_topic(topic):
+    return redirect(url_for("api.get_topic", topic=topic))
