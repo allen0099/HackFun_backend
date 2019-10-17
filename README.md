@@ -2,6 +2,7 @@
 
 ### Requirements
 
+Docker and docker-compose  
 Python version: 3.7+  
 Package listed in `requirements.txt`
     
@@ -17,6 +18,10 @@ cd TKU-project
 sudo apt install python-3.7 python-3.7-dev python3.7-venv python3.7-doc binfmt-support
 # intsall mysql requirements
 sudo apt install libmysqlclient-dev mysql-server
+
+# make sure you have docker and docker-compose already
+chmod +x ./docker/startDockerCompose.sh
+./docker/startDockerCompose.sh
 
 # add vitural environment
 python3.7 -m venv venv
