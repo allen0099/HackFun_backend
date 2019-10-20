@@ -1,5 +1,9 @@
 import configparser
 
+config = configparser.ConfigParser()
+config.read("credentials.ini")
+ROOT_PASSWORD = config["Flask"]["SQL_password"]
+
 
 class Config:
     JSON_SORT_KEYS: bool = False
@@ -16,19 +20,19 @@ class Config:
 
 class TestConfig(Config):
     SECRET_KEY: str = "testingString"
-    SQLALCHEMY_DATABASE_URI: str = "mysql://root:meowmeow@127.0.0.1:32769/testing"
+    SQLALCHEMY_DATABASE_URI: str = "mysql://root:" + ROOT_PASSWORD + "@127.0.0.1:32769/testing"
 
 
 class DevelopmentConfig(Config):
     SECRET_KEY: str = b'(ML\x90\x13\xcd\xaev\xa0 \x1d\x1fC\xab\xb7\x05'
-    SQLALCHEMY_DATABASE_URI: str = "mysql://root:meowmeow@127.0.0.1:32769/develop"
+    SQLALCHEMY_DATABASE_URI: str = "mysql://root:" + ROOT_PASSWORD + "@127.0.0.1:32769/develop"
 
 
 class ProductionConfig(Config):
     config = configparser.ConfigParser()
     config.read("credentials.ini")
     SECRET_KEY = config['Flask']['secretKey']
-    SQLALCHEMY_DATABASE_URI: str = "mysql://root:meowmeow@127.0.0.1:32769/production"
+    SQLALCHEMY_DATABASE_URI: str = "mysql://root:" + ROOT_PASSWORD + "@127.0.0.1:32769/production"
 
 
 config = {
