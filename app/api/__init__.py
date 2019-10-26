@@ -2,4 +2,4 @@ from flask import Blueprint
 
 api = Blueprint("api", __name__, url_prefix="/api")
 
-from . import course, cls, topic
+from . import tab, course, lesson, practice

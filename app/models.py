@@ -8,110 +8,175 @@ from flask_login import UserMixin
 from app import db
 
 
-def generateUUID(prefix: str = "") -> str:
+def generate_uuid(prefix: str = "") -> str:
     return prefix + str(uuid.uuid4())
 
 
-class Course(db.Model):
-    __tablename__ = "courses"
+class Tab(db.Model):
+    __tablename__ = "tab"
 
     id = db.Column(db.Integer,
                    primary_key=True)
-    name = db.Column(db.String(255),
-                     unique=True)
-    info = db.Column(db.Text)
-    # backref means you can use Class.backref to find Course
-    classes = db.relationship("Class",
-                              backref="course",
-                              lazy="dynamic")
 
-    def __repr__(self):
-        return "<Course %r>" % self.name
+    name = db.Column(db.String(15),
+                     unique=True,
+                     nullable=False)
 
-    def to_dict(self) -> dict:
-        return {
-            "name": self.name,
-            "info": self.info
-        }
-
-
-class Class(db.Model):
-    __tablename__ = "classes"
-
-    id = db.Column(db.Integer,
-                   primary_key=True)
-    # belong to which course
-    belong = db.Column(db.String(255),
-                       db.ForeignKey("courses.name"))
-    name = db.Column(db.String(255),
-                     unique=True)
-    info = db.Column(db.Text)
-
-    # provide backref for topic
-    topics = db.relationship("Topic",
-                             backref="class",
+    course = db.relationship("Course",
+                             backref="tab",
                              lazy="dynamic")
 
+    def get_name(self):
+        return self.name
+
     def __repr__(self):
-        return "<Class %r>" % self.name
+        return "<Tab %r>" % self.tab
+
+
+class Course(db.Model):
+    __tablename__ = "course"
+
+    id = db.Column(db.Integer,
+                   primary_key=True)
+    belong = db.Column(db.String(15),
+                       db.ForeignKey("tab.name"))
+    name = db.Column(db.String(50),
+                     unique=True,
+                     nullable=False)
+    description = db.Column(db.Text,
+                            nullable=False)
+
+    lessons = db.relationship("Lesson",
+                              backref="course",
+                              lazy="dynamic")
 
     def to_dict(self):
         return {
             "name": self.name,
-            "info": self.info,
-            "topics": {
-                "topic_count": len(self.topics.all()),
-                "topics_uuid": [Topic.get_uuid(uuid) for uuid in self.topics.all()]
-            }
+            "description": self.description,
+            "lessons": [Lesson.get_course(ls) for ls in self.lessons.all()]
         }
 
+    def __repr__(self):
+        return "<Course %r>" % self.name
 
-class Topic(db.Model):
-    __tablename__ = "topics"
+
+class Lesson(db.Model):
+    __tablename__ = "lesson"
 
     id = db.Column(db.Integer,
                    primary_key=True)
     uuid = db.Column(db.String(64),
-                     default=generateUUID("topic-"),
+                     default=generate_uuid("lesson-"),
                      unique=True,
                      nullable=False)
-    # belong to which class
-    belong = db.Column(db.Integer,
-                       db.ForeignKey("classes.id"))
-    name = db.Column(db.Text)
+    belong = db.Column(db.String(50),
+                       db.ForeignKey("course.name"))
+    name = db.Column(db.String(255),
+                     unique=True,
+                     nullable=False)
     description = db.Column(db.Text)
-    type = db.Column(db.String(20))
+    url = db.Column(db.Text)
 
-    # provide backref for types
-    classes = db.relationship("TopicChoose",
-                              backref="topic",
-                              lazy="dynamic")
+    practices = db.relationship("Practice",
+                                backref="lesson",
+                                lazy="dynamic")
 
-    def __repr__(self):
-        return "<Topic %r>" % self.name
+    def get_course(self):
+        return {
+            "uuid": self.uuid,
+            "name": self.name,
+            "description": self.description,
+            "url": self.url
+        }
 
     def to_dict(self):
         return {
             "uuid": self.uuid,
             "name": self.name,
-            "description": self.description
+            "description": self.description,
+            "url": self.url,
+            "practices": [Practice.get_practice(pr) for pr in self.practices.all()]
         }
 
-    def get_uuid(self):
-        return self.uuid
+    def __repr__(self):
+        return "<Lesson %r>" % self.name
 
 
-class TopicChoose(db.Model):
-    __tablename__ = "topic_choose"
+class Practice(db.Model):
+    __tablename__ = "practice"
 
     id = db.Column(db.Integer,
                    primary_key=True)
-    # belong to which topic
-    belong_to = db.Column(db.Integer,
-                          db.ForeignKey("topics.id"))
+    uuid = db.Column(db.String(64),
+                     default=generate_uuid(),
+                     unique=True,
+                     nullable=False)
+    belong = db.Column(db.Integer,
+                       db.ForeignKey("lesson.id"))
+    name = db.Column(db.Text,
+                     nullable=False)
+    description = db.Column(db.Text)
+    type = db.Column(db.String(20))
+
+    hint = db.relationship("Hint",
+                           backref="practice",
+                           lazy="dynamic")
+
+    choose = db.relationship("Choose",
+                             backref="practice",
+                             lazy="dynamic")
+
+    docker = db.relationship("Docker",
+                             backref="practice",
+                             lazy="dynamic")
+
+    def to_dict(self):
+        return {
+            "uuid": self.uuid,
+            "name": self.name,
+            "description": self.description,
+            "hint": [Hint.to_dict(h) for h in self.hint.all()],
+            "type": self.type
+        }
+
+    def __repr__(self):
+        return "<Practice %r>" % self.name
+
+
+class Hint(db.Model):
+    __tablename__ = "hint"
+
+    id = db.Column(db.Integer,
+                   primary_key=True)
+    belong = db.Column(db.String(64),
+                       db.ForeignKey("practice.uuid"))
+    item = db.Column(db.String(20),
+                     nullable=False)
+    description = db.Column(db.Text,
+                            nullable=False)
+
+    def to_dict(self):
+        return {
+            "item": self.item,
+            "description": self.description
+        }
+
+    def __repr__(self):
+        return "<Hint %r>" % self.name
+
+
+class Choose(db.Model):
+    __tablename__ = "choose"
+
+    id = db.Column(db.Integer,
+                   primary_key=True)
+    belong_to = db.Column(db.String(64),
+                          db.ForeignKey("practice.uuid"))
     choose_count = db.Column(db.Integer())
     can_multiple = db.Column(db.Boolean)
-    ans = db.Column(db.Text)
+    ans = db.Column(db.Integer,
+                    default=10000000000)
     chosen_1 = db.Column(db.Text)
     chosen_2 = db.Column(db.Text)
     chosen_3 = db.Column(db.Text)
@@ -124,23 +189,22 @@ class TopicChoose(db.Model):
     chosen_10 = db.Column(db.Text)
 
     def __repr__(self):
-        return "<Topic_Choose %r>" % self.id
+        return "<Choose %r>" % self.id
 
 
-class TopicDocker(db.Model):
-    __tablename__ = "topic_docker"
+class Docker(db.Model):
+    __tablename__ = "docker"
 
     id = db.Column(db.Integer,
                    primary_key=True)
-    # belong to which topic
-    belong_to = db.Column(db.Integer,
-                          db.ForeignKey("topics.id"))
-    docker_url = db.Column(db.Text)
-    docker_flag = db.Column(db.Text)
-    docker_image = db.Column(db.Text)
+    belong_to = db.Column(db.String(64),
+                          db.ForeignKey("practice.uuid"))
+    url = db.Column(db.Text)
+    flag = db.Column(db.Text)
+    image = db.Column(db.Text)
 
     def __repr__(self):
-        return "<Topic %r>" % self.id
+        return "<Docker %r>" % self.id
 
 
 class User(db.Model, UserMixin):

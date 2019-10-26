@@ -4,22 +4,17 @@ from app.api import api
 from app.models import Course
 
 
-@api.route("/course")
-def root_course():
-    course = Course.query.all()
-    if not course:
-        return jsonify({
-            "ok": False,
-            "result": "No course found"
-        }), 404
+@api.route("/course/<string:name>")
+def root_course(name):
+    q = Course.query.filter_by(belong=name).all()
     return jsonify({
         "ok": True,
         "result": {
-            "course": [Course.to_dict(c) for c in course]
+            "course": [Course.to_dict(c) for c in q]
         }
     })
 
 
-@api.route("/course/")
-def redirect_root():
-    return redirect(url_for("api.root_course"))
+@api.route("/course/<string:name>/")
+def redirect_course(name):
+    return redirect(url_for("api.root_course", name=name))
