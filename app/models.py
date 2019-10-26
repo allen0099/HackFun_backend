@@ -131,6 +131,9 @@ class Practice(db.Model):
                              backref="practice",
                              lazy="dynamic")
 
+    def get_practice(self):
+        return self.uuid
+
     def to_dict(self):
         return {
             "uuid": self.uuid,
