@@ -50,6 +50,19 @@ chmod +x startFlaskServer.sh
 # using uwsgi
 uwsgi --socket 0.0.0.0:8080 --protocol=http --master --enable-threads -w wsgi:application --processes 4
 ```
+To make it available when system boot up
+```shell script
+sudo cp ./docker/backend.service /etc/systemd/system/backend.service
+sudo systemctl start backend.service
+sudo systemctl enable backend.service
+
+# edit nginx config
+sudo cp backend /etc/nginx/sites-available/backend
+sudo ln -s /etc/nginx/sites-available/backend /etc/nginx/sites-enabled
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
 
 recommend using PyCharm for IDE  
 plugins:  
