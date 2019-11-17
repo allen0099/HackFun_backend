@@ -26,9 +26,6 @@ class Tab(db.Model):
                              backref="tab",
                              lazy="dynamic")
 
-    def get_name(self):
-        return self.name
-
     def __repr__(self):
         return "<Tab %r>" % self.tab
 
@@ -49,13 +46,6 @@ class Course(db.Model):
     lessons = db.relationship("Lesson",
                               backref="course",
                               lazy="dynamic")
-
-    def to_dict(self):
-        return {
-            "name": self.name,
-            "description": self.description,
-            "lessons": [Lesson.get_course(ls) for ls in self.lessons.all()]
-        }
 
     def __repr__(self):
         return "<Course %r>" % self.name
@@ -81,23 +71,6 @@ class Lesson(db.Model):
     practices = db.relationship("Practice",
                                 backref="lesson",
                                 lazy="dynamic")
-
-    def get_course(self):
-        return {
-            "uuid": self.uuid,
-            "name": self.name,
-            "description": self.description,
-            "url": self.url
-        }
-
-    def to_dict(self):
-        return {
-            "uuid": self.uuid,
-            "name": self.name,
-            "description": self.description,
-            "url": self.url,
-            "practices": [Practice.get_practice(pr) for pr in self.practices.all()]
-        }
 
     def __repr__(self):
         return "<Lesson %r>" % self.name
@@ -131,18 +104,6 @@ class Practice(db.Model):
                              backref="practice",
                              lazy="dynamic")
 
-    def get_practice(self):
-        return self.uuid
-
-    def to_dict(self):
-        return {
-            "uuid": self.uuid,
-            "name": self.name,
-            "description": self.description,
-            "hint": [Hint.to_dict(h) for h in self.hint.all()],
-            "type": self.type
-        }
-
     def __repr__(self):
         return "<Practice %r>" % self.name
 
@@ -158,12 +119,6 @@ class Hint(db.Model):
                      nullable=False)
     description = db.Column(db.Text,
                             nullable=False)
-
-    def to_dict(self):
-        return {
-            "item": self.item,
-            "description": self.description
-        }
 
     def __repr__(self):
         return "<Hint %r>" % self.name

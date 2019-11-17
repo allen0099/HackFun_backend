@@ -4,17 +4,31 @@ from app.api import api
 from app.models import Lesson
 
 
-@api.route("/lesson/<string:uuid>")
-def root_lesson(uuid):
-    q = Lesson.query.filter_by(uuid=uuid).first()
-    return jsonify({
-        "ok": True,
-        "result": {
-            "lesson": q.to_dict()
-        }
-    })
+@api.route("/lesson/<string:name>")
+def root_lesson(name):
+    RESPONSE = {"ok": False}
+    lesson = Lesson.query.filter_by(name=name).first()
+
+    if not lesson:
+        RESPONSE["result"] = "Lesson not found"
+        return jsonify(RESPONSE), 404
+
+    RESPONSE["ok"] = True
+    RESPONSE["lesson"] = {
+        "name": lesson.name,
+        "description": lesson.description,
+        "url": lesson.url,
+        "practices": [
+            {
+                "name": practice.name,
+                "description": practice.description,
+            } for practice in lesson.practices.all()
+        ]
+    }
+
+    return jsonify(RESPONSE)
 
 
-@api.route("/lesson/<string:uuid>/")
-def redirect_lesson(uuid):
-    return redirect(url_for("api.root_lesson", uuid=uuid))
+@api.route("/lesson/<string:name>/")
+def redirect_lesson(name):
+    return redirect(url_for("api.root_lesson", name=name))

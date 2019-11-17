@@ -6,13 +6,28 @@ from app.models import Course
 
 @api.route("/course/<string:name>")
 def root_course(name):
-    q = Course.query.filter_by(belong=name).all()
-    return jsonify({
-        "ok": True,
-        "result": {
-            "course": [Course.to_dict(c) for c in q]
-        }
-    })
+    RESPONSE = {"ok": True}
+    course = Course.query.filter_by(name=name).first()
+
+    if not course:
+        RESPONSE["ok"] = False
+        RESPONSE["result"] = "Course not found"
+        return jsonify(RESPONSE), 404
+
+    RESPONSE["course"] = {
+        "name": course.name,
+        "description": course.description,
+        "lessons": [
+            {
+                "name": lesson.name,
+                "description": lesson.description,
+                "uuid": lesson.uuid,
+                "url": lesson.url
+            } for lesson in course.lessons.all()
+        ],
+        "overview": None
+    }
+    return jsonify(RESPONSE)
 
 
 @api.route("/course/<string:name>/")

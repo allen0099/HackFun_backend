@@ -6,18 +6,23 @@ from app.models import Tab
 
 @api.route("/tab")
 def root_tab():
-    t = Tab.query.all()
-    if not t:
-        return jsonify({
-            "ok": False,
-            "result": "No tab found"
-        }), 404
-    return jsonify({
-        "ok": True,
-        "result": {
-            "tabs": [Tab.get_name(c) for c in t]
-        }
-    })
+    tabs = Tab.query.all()
+    RESPONSE = {"ok": None}
+
+    if not tabs:
+        RESPONSE['result'] = "No tabs found"
+        return jsonify(RESPONSE), 404
+
+    RESPONSE["ok"] = True
+    RESPONSE["result"] = {
+        cards.name: [
+            {
+                "name": course.name,
+                "description": course.description
+            } for course in cards.course.all()
+        ] for cards in tabs
+    }
+    return jsonify(RESPONSE)
 
 
 @api.route("/tab/")
