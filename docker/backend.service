@@ -1,0 +1,13 @@
+[Unit]
+Description = uWSGI instance to serve backend
+After = network.target
+
+[Service]
+User = allen0099
+Group = www-data
+WorkingDirectory = /home/allen0099/backend
+Environment = "PATH=/home/allen0099/backend/venv/bin"
+ExecStart = /home/allen0099/backend/venv/bin/uwsgi --ini ./docker/wsgi.ini
+
+[Install]
+WantedBy = multi-user.target

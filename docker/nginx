@@ -1,0 +1,9 @@
+server {
+    listen 80;
+    server_name allen0099.tw dev.allen0099.tw;
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/home/allen0099/backend/backend.sock;
+    }
+}
