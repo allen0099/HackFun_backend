@@ -13,6 +13,8 @@ def create_app(config_name):
     config[config_name].init_app(app)
 
     db.init_app(app)
+    from app.authorization.login import login_manager
+    login_manager.init_app(app)
 
     if config_name != "test":
         # import blueprints to flask
