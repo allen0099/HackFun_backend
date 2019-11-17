@@ -22,6 +22,7 @@ def root_lesson(name):
             {
                 "name": practice.name,
                 "description": practice.description,
+                "uuid": practice.uuid
             } for practice in lesson.practices.all()
         ]
     }
