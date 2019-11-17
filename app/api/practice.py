@@ -32,16 +32,25 @@ def root_practice(uuid):
 
     if practice.type == "docker":
         _docker = practice.docker.first()
+        if not _docker:
+            practice_dict["topic"] = {
+                "topic": None,
+                "result": "Type Not found!"
+            }
         practice_dict["topic"] = {
             "url": _docker.url
         }
     elif practice.type == "choose":
         _choose = practice.choose.first()
+        if not _choose:
+            practice_dict["topic"] = {
+                "topic": None,
+                "result": "Type Not found!"
+            }
         _append = {
             "multiple": _choose.can_multiple,
             "counts": _choose.choose_count,
             "chooses": {
-
             }
         }
         _choose_set = {
@@ -61,7 +70,6 @@ def root_practice(uuid):
             _choose_set.popitem()
         _append["chooses"] = _choose_set
         practice_dict["topic"] = _append
-
     else:
         practice_dict["topic"] = {
             "topic": None,
