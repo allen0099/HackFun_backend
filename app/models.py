@@ -4,6 +4,7 @@ import uuid
 from typing import Union
 
 from flask_login import UserMixin
+from itsdangerous import TimedJSONWebSignatureSerializer, SignatureExpired, BadSignature
 
 from app import db
 
@@ -192,14 +193,6 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f"<User {self.id}>"
 
-    def to_json(self) -> dict:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "email": self.email,
-            "profile pic": self.profile_pic
-        }
-
     @staticmethod
     def update(user_id: str, name: str, email: str, pic: str) -> Union[str, None]:
         user = User.get(user_id)
@@ -235,3 +228,21 @@ class User(db.Model, UserMixin):
             email=user.email,
             profile_pic=user.profile_pic
         )
+
+    def generate_token(self, expiration=600):
+        from main import app
+        s = TimedJSONWebSignatureSerializer(app.config['SECRET_KEY'], expires_in=expiration)
+        return s.dumps({'id': self.id})
+
+    @staticmethod
+    def verify_token(token):
+        from main import app
+        s = TimedJSONWebSignatureSerializer(app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except SignatureExpired:
+            return None  # valid token, but expired
+        except BadSignature:
+            return None  # invalid token
+        user = User.query.get(data['id'])
+        return user

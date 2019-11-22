@@ -71,7 +71,6 @@ def _login():
         redirect_uri=request.base_url + "/callback",
         scope=["openid", "email", "profile"],
     )
-    print(request_uri)
     return redirect(request_uri)
 
 
@@ -79,6 +78,8 @@ def _login():
 def _callback():
     # Get authorization code Google sent back to you
     code = request.args.get("code")
+    if not code:
+        return "You should not go here!", 400
 
     # Find out what URL to hit to get tokens that allow you to ask for
     # things on behalf of a user
@@ -99,6 +100,8 @@ def _callback():
         auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
     )
 
+    if token_response.json().get("access_token", None) is None:
+        return "You should not go here!", 400
     # Parse the tokens!
     client.parse_request_body_response(json.dumps(token_response.json()))
 
