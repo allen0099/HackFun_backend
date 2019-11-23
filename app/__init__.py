@@ -22,6 +22,8 @@ def create_app(config_name):
         app.register_blueprint(bp_api)
         from .authorization import authorized as bp_authorize
         app.register_blueprint(bp_authorize)
+        from .page import edit as bp_page
+        app.register_blueprint(bp_page)
 
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
