@@ -6,24 +6,45 @@ from app.models import Tab, Course
 
 edit = Blueprint("page", __name__)
 
+query_return = {
+    "SUCCESS": "Add query success!",
+    "FAIL": "Add query failed!",
+
+    "NULL": "String has nothing, check parameter!",
+    "TOOLONG": "String tooooooo long!"
+}
+
+
+def check_length(string: str, limit: int = None) -> bool:
+    if len(string) == 0:
+        flash(query_return["NULL"], "fail")
+        return False
+    if limit is not None:
+        if len(string) > limit:
+            flash(query_return["TOOLONG"], "fail")
+            return False
+    return True
+
+
+def not_in_db(query) -> bool:
+    if query is not None:
+        return False
+    else:
+        return True
+
 
 @edit.route("/add_tab", methods=["POST"])
 @login_required
 def add_new_page():
     _tab = request.values.get("tab")
 
-    _check = Tab.query.filter_by(name=_tab).first()
-    if _tab == "":
-        flash("Check parameters!", "fail")
-    elif len(_tab) > 15:
-        flash("Check length!", "fail")
-    else:
-        if _check is None:
+    if check_length(_tab, 15):
+        if not_in_db(Tab.query.filter_by(name=_tab).first()):
             db.session.add(Tab(name=_tab))
             db.session.commit()
-            flash("Add success!", "success")
+            flash(query_return["SUCCESS"], "success")
         else:
-            flash("Add fail!", "fail")
+            flash(query_return["FAIL"], "fail")
     return redirect(url_for("page.edit_page"))
 
 
@@ -34,16 +55,14 @@ def add_new_course():
     _name = request.values.get("name")
     _desc = request.values.get("description")
 
-    _check = Course.query.filter_by(name=_name).first()
-    if (_tab and _name and _desc) == "":
-        flash("Check parameters!", "fail")
-    else:
-        if _check is None:
-            # db.session.add(Course(name=_name, description=_desc))
-            # db.session.commit()
-            flash("Add success!", "success")
+    if check_length(_tab, 15):
+        if not not_in_db(Tab.query.filter_by(name=_tab).first()):
+            if check_length(_name, 50) and check_length(_desc):
+                db.session.add(Course(belong=_tab, name=_name, description=_desc))
+                db.session.commit()
+                flash(query_return["SUCCESS"], "success")
         else:
-            flash("Add fail!", "fail")
+            flash(query_return["FAIL"], "fail")
     return redirect(url_for("page.edit_page"))
 
 
