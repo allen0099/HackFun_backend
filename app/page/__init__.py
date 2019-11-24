@@ -15,6 +15,8 @@ def add_new_page():
     _check = Tab.query.filter_by(name=_tab).first()
     if _tab == "":
         flash("Check parameters!", "fail")
+    elif len(_tab) > 15:
+        flash("Check length!", "fail")
     else:
         if _check is None:
             db.session.add(Tab(name=_tab))
@@ -49,7 +51,7 @@ def add_new_course():
 @login_required
 def edit_page():
     print(current_user)
-    if current_user.id == "109728865859768459887" or current_user.id == "113635293585592202061":
+    if current_user.id == ("109728865859768459887" or "113635293585592202061" or "103073582772399260317"):
         tabs = Tab.query.order_by(Tab.name).all()
         return render_template("edit.html", tabs=tabs)
     else:
