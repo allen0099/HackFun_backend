@@ -16,6 +16,9 @@ def create_app(config_name):
     from app.authorization.login import login_manager
     login_manager.init_app(app)
 
+    app.jinja_env.trim_blocks = True
+    app.jinja_env.lstrip_blocks = True
+
     if config_name != "test":
         # import blueprints to flask
         from .api import api as bp_api
