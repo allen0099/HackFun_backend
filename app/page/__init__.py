@@ -70,8 +70,9 @@ def add_new_course():
 @login_required
 def edit_page():
     print(current_user)
-    if current_user.id == ("109728865859768459887" or "113635293585592202061" or "103073582772399260317"):
+    if current_user.id in ["113635293585592202061", "109728865859768459887", "103073582772399260317"]:
         tabs = Tab.query.order_by(Tab.name).all()
-        return render_template("edit.html", tabs=tabs)
+        course = Course.query.order_by(Course.name).all()
+        return render_template("edit.html", tabs=tabs, courses=course)
     else:
         return redirect(url_for("login.index"))

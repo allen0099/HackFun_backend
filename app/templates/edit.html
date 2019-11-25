@@ -136,7 +136,7 @@
 {% endwith %}
 <div class="tabHolder">
     <button class="tab" onclick="o('Tab')">Tab add</button>
-    <button class="tab" onclick="o('Course')" id="default">Course add</button>
+    <button class="tab" onclick="o('Course')" id="defaultHolder">Course add</button>
     <button class="tab" onclick="o('Lesson')">Lesson add</button>
     <button class="tab" onclick="o('Practice')">Practice add</button>
 </div>
@@ -145,7 +145,7 @@
     <p>
         This is a tab item show in the top of the page, ordered by name
     </p>
-    <form action="/add_tab" method="post">
+    <form id="tabForm" action="/add_tab" method="post">
         <label>
             New tab:
             <input type="text" name="tab" maxlength="15">
@@ -168,7 +168,7 @@
     <p>
         Course is the course under tab.
     </p>
-    <form action="/add_course" method="post">
+    <form id="courseForm" action="/add_course" method="post">
         <label>
             Tab choose:
             <select name="tab">
@@ -178,7 +178,8 @@
                     </option>
                 {% endfor %}
             </select>
-        </label><br>
+        </label>
+        <br>
         <label>
             Name:
             <input type="text" name="name" maxlength="50">
@@ -189,9 +190,38 @@
         </label><br>
         <input type="submit" value="Submit">
     </form>
-    <p>
-        TODO 插入現有資料
-    </p>
+    <br>
+    <label>
+        <select id="check" name="course" style="width: 25%">
+            <option value="" selected disabled hidden>
+                Select course here to know dataset!
+            </option>
+            <option id="defaultCourse" value="{{ courses[0].name }}" onclick="courseSelect('{{ courses[0].name }}')">
+                {{ courses[0].name }}
+            </option>
+            {% for course in courses[1:] %}
+                <option value="{{ course.name }}" onclick="courseSelect('{{ course.name }}')">
+                    {{ course.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </label>
+    {% for course in courses %}
+        <div id="{{ course.name }}" class="contentCourse">
+            <p>
+                belong:
+                {{ course.belong }}
+            </p>
+            <p>
+                name:
+                {{ course.name }}
+            </p>
+            <p>
+                description:
+                {{ course.description }}
+            </p>
+        </div>
+    {% endfor %}
 </div>
 
 <div id="Lesson" class="content">
@@ -216,7 +246,22 @@
         document.getElementById(c).style.display = "block";
     }
 
-    document.getElementById("default").click();
+    function courseSelect(c) {
+        var i, t;
+        t = document.getElementsByClassName("contentCourse");
+        for (i = 0; i < t.length; i++) {
+            t[i].style.display = "none";
+        }
+        document.getElementById(c).style.display = "block";
+    }
+
+    document.getElementById("tabForm").reset();
+    document.getElementById("courseForm").reset();
+
+    document.getElementById("check").selectedIndex = 0;
+
+    document.getElementById("defaultHolder").click();
+    document.getElementById("defaultCourse").click();
 </script>
 </body>
 </html>
