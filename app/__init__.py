@@ -33,6 +33,13 @@ def create_app(config_name):
     # TODO should not using wildcard char, replace after production
     CORS(app, origins="*", supports_credentials=True)
 
+    @app.errorhandler(400)
+    def bad_request(error):
+        return make_response(jsonify({
+            "error": "Bad request",
+            "reason": error.get_description()[3:-4]
+        }), 400)
+
     @app.errorhandler(401)
     def unauthorized(error):
         return make_response(jsonify({

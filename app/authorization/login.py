@@ -2,8 +2,8 @@ import configparser
 import json
 
 import requests
-from flask import request, redirect, url_for, abort
-from flask_login import current_user, login_required, logout_user, login_user, LoginManager
+from flask import request, abort, jsonify, redirect, url_for
+from flask_login import login_required, logout_user, login_user, LoginManager, current_user
 from oauthlib.oauth2 import WebApplicationClient
 
 from app.authorization import authorized
@@ -31,22 +31,6 @@ def load_user(uid):
     return User.get(uid)
 
 
-@authorized.route("/test")
-def index():
-    print(current_user)
-    if current_user.is_authenticated:
-        return (
-            "<p>Hello, {}! You're logged in! Email: {}</p>"
-            "<div><p>Google Profile Picture:</p>"
-            '<img src="{}" alt="Google profile pic"></img></div>'
-            '<a class="button" href="/logout">Logout</a>'.format(
-                current_user.name, current_user.email, current_user.profile_pic
-            )
-        )
-    else:
-        return '<a class="button" href="/login">Google Login</a>'
-
-
 def get_google_provider_cfg():
     try:
         r = requests.get(GOOGLE_DISCOVERY_URL)
@@ -58,20 +42,41 @@ def get_google_provider_cfg():
         return abort(500, "Can't connect to Google now")
 
 
+@authorized.route("/user")
+@login_required
+def _user():
+    RESPONSE = {
+        "ok": True,
+        "result": {
+            "id": current_user.id,
+            "email": current_user.email,
+            "name": current_user.name,
+            "pic": current_user.profile_pic
+        }
+    }
+    return jsonify(RESPONSE)
+
+
 @authorized.route("/login")
 def _login():
-    # Find out what URL to hit for Google login
-    google_provider_cfg = get_google_provider_cfg()
-    authorization_endpoint = google_provider_cfg["authorization_endpoint"]
+    if not current_user.is_authenticated:
+        # Find out what URL to hit for Google login
+        google_provider_cfg = get_google_provider_cfg()
+        authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
-    # Use library to construct the request for Google login and provide
-    # scopes that let you retrieve user's profile from Google
-    request_uri = client.prepare_request_uri(
-        authorization_endpoint,
-        redirect_uri=request.base_url + "/callback",
-        scope=["openid", "email", "profile"],
-    )
-    return redirect(request_uri)
+        # Use library to construct the request for Google login and provide
+        # scopes that let you retrieve user's profile from Google
+        request_uri = client.prepare_request_uri(
+            authorization_endpoint,
+            redirect_uri=request.host_url + "login/callback",
+            scope=["openid", "email", "profile"],
+        )
+        RESPONSE = {"ok": True,
+                    "uri": request_uri}
+        return jsonify(RESPONSE)
+    else:
+        # User not login
+        return redirect(url_for("login._user"))
 
 
 @authorized.route("/login/callback")
@@ -79,7 +84,7 @@ def _callback():
     # Get authorization code Google sent back to you
     code = request.args.get("code")
     if not code:
-        return "You should not go here!", 400
+        return abort(400)
 
     # Find out what URL to hit to get tokens that allow you to ask for
     # things on behalf of a user
@@ -101,7 +106,7 @@ def _callback():
     )
 
     if token_response.json().get("access_token", None) is None:
-        return "You should not go here!", 400
+        return abort(400)
     # Parse the tokens!
     client.parse_request_body_response(json.dumps(token_response.json()))
 
@@ -131,13 +136,15 @@ def _callback():
         user = User(unique_id, users_name, users_email, picture)
         login_user(user)
 
-        return redirect(url_for("login.index"))
+        return redirect(url_for("login._user"))
     else:
-        return "User email not available or not verified by Google.", 400
+        return abort(400, "User email not available or not verified by Google.")
 
 
 @authorized.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("login.index"))
+    RESPONSE = {"ok": True,
+                "result": "logout success!"}
+    return jsonify(RESPONSE)
