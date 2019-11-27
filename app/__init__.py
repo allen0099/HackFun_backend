@@ -28,7 +28,10 @@ def create_app(config_name):
         from .page import edit as bp_page
         app.register_blueprint(bp_page)
 
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    # This allow frontend CORS the resources on this server
+    # support_credentials is for cookies allowed
+    # TODO should not using wildcard char, replace after production
+    CORS(app, origins="*", supports_credentials=True)
 
     @app.errorhandler(401)
     def unauthorized(error):
