@@ -1,4 +1,4 @@
-from flask import Flask, make_response, jsonify
+from flask import Flask, make_response, jsonify, url_for
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
@@ -44,7 +44,8 @@ def create_app(config_name):
     def unauthorized(error):
         return make_response(jsonify({
             "error": "Unauthorized",
-            "reason": error.get_description()[3:-4]
+            "reason": error.get_description()[3:-4],
+            "redirect": url_for("login._login", _external=True)
         }), 401)
 
     @app.errorhandler(404)
