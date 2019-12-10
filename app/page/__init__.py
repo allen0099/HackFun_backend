@@ -35,7 +35,7 @@ def not_in_db(query) -> bool:
 
 @edit.route("/add_tab", methods=["POST"])
 @login_required
-def add_new_page():
+def add_new_tab():
     _tab = request.values.get("tab")
 
     if check_length(_tab, 15):
