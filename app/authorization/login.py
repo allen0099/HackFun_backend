@@ -71,12 +71,17 @@ def _login():
             redirect_uri=request.host_url + "login/callback",
             scope=["openid", "email", "profile"],
         )
-        RESPONSE = {"ok": True,
-                    "uri": request_uri}
+        RESPONSE = {
+            "logged-in": False,
+            "uri": request_uri
+        }
         return jsonify(RESPONSE)
     else:
         # User not login
-        return redirect(url_for("login._user"))
+        RESPONSE = {
+            "logged-in": True
+        }
+        return jsonify(RESPONSE)
 
 
 @authorized.route("/login/callback")
