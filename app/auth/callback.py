@@ -10,7 +10,7 @@ from app.auth import bp_callback
 from app.models import User
 
 # parse the config and pass them as Google credentials
-config: configparser.ConfigParser = configparser.ConfigParser()
+config: configparser = configparser.ConfigParser()
 config.read("credentials/google.ini")
 google: dict = config['Google']
 GOOGLE_CLIENT_ID: str = google['ID']

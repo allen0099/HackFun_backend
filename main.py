@@ -1,10 +1,12 @@
-import os
+import configparser
 
 from flask import Flask
 
 from app import create_app, db
 
-FLASK_CONFIG: str = os.getenv('FLASK_CONFIG')
+config: configparser = configparser.ConfigParser()
+config.read("credentials/flask.ini")
+FLASK_CONFIG = config["Flask"]["config"]
 
 app: Flask = create_app(FLASK_CONFIG or "development")
 

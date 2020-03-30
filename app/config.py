@@ -29,11 +29,22 @@ class DevConfig(Config):
 
 
 class ProductionConfig(Config):
-    config = configparser.ConfigParser()
+    config: configparser = configparser.ConfigParser()
     config.read("credentials/flask.ini")
+
     SECRET_KEY = config['Flask']['secretKey']
 
-    SQL_SCHEMA: str = "develop"
+    sql_config: configparser = configparser.ConfigParser()
+    sql_config.read("credentials/flask.ini")
+
+    sql: dict = sql_config["sql"]
+
+    SQL_ADMIN: str = sql["admin"]
+    SQL_PASSWORD: str = sql["password"]
+    SQL_LOC: str = sql["loc"]
+    SQL_PORT: str = sql["port"]
+    SQL_SCHEMA: str = sql["schema"]
+    SQLALCHEMY_DATABASE_URI: str = f"mysql://{SQL_ADMIN}:{SQL_PASSWORD}@{SQL_LOC}:{SQL_PORT}/{SQL_SCHEMA}"
 
 
 config: dict = {
