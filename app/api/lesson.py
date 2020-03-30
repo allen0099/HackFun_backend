@@ -5,16 +5,16 @@ from app.models import Lesson
 
 
 @api.route("/lesson/<string:name>")
-def root_lesson(name):
-    RESPONSE = {"ok": False}
-    lesson = Lesson.query.filter_by(name=name).first()
+def root_lesson(name) -> jsonify:
+    RESPONSE: dict = {"ok": False}
+    lesson: Lesson = Lesson.query.filter_by(name=name).first()
 
     if not lesson:
-        RESPONSE["result"] = "Lesson not found"
+        RESPONSE["result"]: str = "Lesson not found"
         return jsonify(RESPONSE), 404
 
-    RESPONSE["ok"] = True
-    RESPONSE["lesson"] = {
+    RESPONSE["ok"]: bool = True
+    RESPONSE["lesson"]: dict = {
         "name": lesson.name,
         "description": lesson.description,
         "url": lesson.url,
@@ -31,5 +31,5 @@ def root_lesson(name):
 
 
 @api.route("/lesson/<string:name>/")
-def redirect_lesson(name):
+def redirect_lesson(name) -> redirect:
     return redirect(url_for("api.root_lesson", name=name))

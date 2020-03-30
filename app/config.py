@@ -1,44 +1,44 @@
 import configparser
 
-config = configparser.ConfigParser()
-config.read("credentials.ini")
-ROOT_PASSWORD = config["Flask"]["SQL_password"]
-
 
 class Config:
     JSON_SORT_KEYS: bool = False
 
     SECRET_KEY: str = None
 
-    SQLALCHEMY_DATABASE_URI: str = None
+    SQL_ADMIN: str = "root"
+    SQL_PASSWORD: str = "meowmeow"
+    SQL_LOC: str = "127.0.0.1"
+    SQL_PORT: str = "32769"
+    SQL_SCHEMA: str = "testing"
+
+    SQLALCHEMY_DATABASE_URI: str = f"mysql://{SQL_ADMIN}:{SQL_PASSWORD}@{SQL_LOC}:{SQL_PORT}/{SQL_SCHEMA}"
+
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
 
-    @staticmethod
-    def init_app(app):
-        pass
 
+class DevConfig(Config):
+    SECRET_KEY: str = "dev"
 
-class TestConfig(Config):
-    SECRET_KEY: str = "testingString"
-    SQLALCHEMY_DATABASE_URI: str = "mysql://root:" + ROOT_PASSWORD + "@127.0.0.1:32769/testing"
-
-
-class DevelopmentConfig(Config):
-    SECRET_KEY: str = b'(ML\x90\x13\xcd\xaev\xa0 \x1d\x1fC\xab\xb7\x05'
-    SQLALCHEMY_DATABASE_URI: str = "mysql://root:" + ROOT_PASSWORD + "@127.0.0.1:32769/develop"
+    SQL_ADMIN: str = "root"
+    SQL_PASSWORD: str = "meowmeow"
+    SQL_LOC: str = "127.0.0.1"
+    SQL_PORT: str = "32769"
+    SQL_SCHEMA: str = "develop"
+    SQLALCHEMY_DATABASE_URI: str = f"mysql://{SQL_ADMIN}:{SQL_PASSWORD}@{SQL_LOC}:{SQL_PORT}/{SQL_SCHEMA}"
 
 
 class ProductionConfig(Config):
     config = configparser.ConfigParser()
-    config.read("credentials.ini")
+    config.read("credentials/flask.ini")
     SECRET_KEY = config['Flask']['secretKey']
-    SQLALCHEMY_DATABASE_URI: str = "mysql://root:" + ROOT_PASSWORD + "@127.0.0.1:32769/production"
+
+    SQL_SCHEMA: str = "develop"
 
 
-config = {
-    "test": TestConfig,
-    "develop": DevelopmentConfig,
-    "product": ProductionConfig,
+config: dict = {
+    "config": Config,
+    "development": DevConfig,
 
-    "default": DevelopmentConfig
+    "production": ProductionConfig
 }

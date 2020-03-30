@@ -5,16 +5,16 @@ from app.models import Course
 
 
 @api.route("/course/<string:name>")
-def root_course(name):
-    RESPONSE = {"ok": True}
-    course = Course.query.filter_by(name=name).first()
+def root_course(name) -> jsonify:
+    RESPONSE: dict = {"ok": True}
+    course: Course = Course.query.filter_by(name=name).first()
 
     if not course:
-        RESPONSE["ok"] = False
-        RESPONSE["result"] = "Course not found"
+        RESPONSE["ok"]: bool = False
+        RESPONSE["result"]: str = "Course not found"
         return jsonify(RESPONSE), 404
 
-    RESPONSE["course"] = {
+    RESPONSE["course"]: dict = {
         "name": course.name,
         "description": course.description,
         "lessons": [
@@ -31,5 +31,5 @@ def root_course(name):
 
 
 @api.route("/course/<string:name>/")
-def redirect_course(name):
+def redirect_course(name) -> redirect:
     return redirect(url_for("api.root_course", name=name))

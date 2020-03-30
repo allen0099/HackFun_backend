@@ -1,9 +1,12 @@
 import os
 
+from flask import Flask
+
 from app import create_app, db
 
-FLASK_CONFIG = os.getenv('FLASK_CONFIG')
-app = create_app(FLASK_CONFIG or 'default')
+FLASK_CONFIG: str = os.getenv('FLASK_CONFIG')
+
+app: Flask = create_app(FLASK_CONFIG or "development")
 
 
 # For flask shell debug use

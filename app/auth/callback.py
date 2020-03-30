@@ -2,33 +2,23 @@ import configparser
 import json
 
 import requests
-from flask import request, abort, jsonify, redirect, url_for
-from flask_login import login_required, logout_user, login_user, LoginManager, current_user
+from flask import request, abort, redirect, url_for
+from flask_login import login_user
 from oauthlib.oauth2 import WebApplicationClient
 
-from app.authorization import authorized
+from app.auth import bp_callback
 from app.models import User
 
 # parse the config and pass them as Google credentials
-config = configparser.ConfigParser()
-config.read("credentials.ini")
-GOOGLE_CLIENT_ID = config['GoogleClient']['ID']
-GOOGLE_CLIENT_SECRET = config['GoogleClient']['Secret']
-GOOGLE_DISCOVERY_URL = (
-    "https://accounts.google.com/.well-known/openid-configuration"
-)
+config: configparser.ConfigParser = configparser.ConfigParser()
+config.read("credentials/google.ini")
+google: dict = config['Google']
+GOOGLE_CLIENT_ID: str = google['ID']
+GOOGLE_CLIENT_SECRET: str = google['Secret']
+GOOGLE_DISCOVERY_URL: str = "https://accounts.google.com/.well-known/openid-configuration"
 
 # OAuth2 client setup
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
-
-# flask login user model
-login_manager = LoginManager()
-
-
-@login_manager.user_loader
-def load_user(uid):
-    # return user, not str
-    return User.get(uid)
 
 
 def get_google_provider_cfg():
@@ -42,49 +32,7 @@ def get_google_provider_cfg():
         return abort(500, "Can't connect to Google now")
 
 
-@authorized.route("/user")
-@login_required
-def _user():
-    RESPONSE = {
-        "ok": True,
-        "result": {
-            "id": current_user.id,
-            "email": current_user.email,
-            "name": current_user.name,
-            "pic": current_user.profile_pic
-        }
-    }
-    return jsonify(RESPONSE)
-
-
-@authorized.route("/login")
-def _login():
-    if not current_user.is_authenticated:
-        # Find out what URL to hit for Google login
-        google_provider_cfg = get_google_provider_cfg()
-        authorization_endpoint = google_provider_cfg["authorization_endpoint"]
-
-        # Use library to construct the request for Google login and provide
-        # scopes that let you retrieve user's profile from Google
-        request_uri = client.prepare_request_uri(
-            authorization_endpoint,
-            redirect_uri=request.host_url + "login/callback",
-            scope=["openid", "email", "profile"],
-        )
-        RESPONSE = {
-            "logged-in": False,
-            "uri": request_uri
-        }
-        return jsonify(RESPONSE)
-    else:
-        # User not login
-        RESPONSE = {
-            "logged-in": True
-        }
-        return jsonify(RESPONSE)
-
-
-@authorized.route("/login/callback")
+@bp_callback.route("/google")  # /callback/google
 def _callback():
     # Get authorization code Google sent back to you
     code = request.args.get("code")
@@ -141,15 +89,6 @@ def _callback():
         user = User(unique_id, users_name, users_email, picture)
         login_user(user)
 
-        return redirect(url_for("login._user"))
+        return redirect(url_for("auth._user"))
     else:
         return abort(400, "User email not available or not verified by Google.")
-
-
-@authorized.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    RESPONSE = {"ok": True,
-                "result": "logout success!"}
-    return jsonify(RESPONSE)

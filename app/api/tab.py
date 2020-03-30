@@ -5,16 +5,16 @@ from app.models import Tab
 
 
 @api.route("/tab")
-def root_tab():
-    tabs = Tab.query.all()
-    RESPONSE = {"ok": None}
+def root_tab() -> jsonify:
+    tabs: list = Tab.query.all()
+    RESPONSE: dict = {"ok": None}
 
     if not tabs:
-        RESPONSE['result'] = "No tabs found"
+        RESPONSE['result']: str = "No tabs found"
         return jsonify(RESPONSE), 404
 
-    RESPONSE["ok"] = True
-    RESPONSE["result"] = {
+    RESPONSE["ok"]: bool = True
+    RESPONSE["result"]: dict = {
         cards.name: [
             {
                 "name": course.name,
@@ -26,5 +26,5 @@ def root_tab():
 
 
 @api.route("/tab/")
-def redirect_tab():
+def redirect_tab() -> redirect:
     return redirect(url_for("api.root_tab"))

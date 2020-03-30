@@ -6,15 +6,15 @@ from app.models import Practice
 
 @api.route("/practice/<string:uuid>")
 def root_practice(uuid):
-    RESPONSE = {"ok": True}
-    practice = Practice.query.filter_by(uuid=uuid).first()
+    RESPONSE: dict = {"ok": True}
+    practice: Practice = Practice.query.filter_by(uuid=uuid).first()
 
     if not practice:
-        RESPONSE["ok"] = False
-        RESPONSE["result"] = "Practice not found"
+        RESPONSE["ok"]: bool = False
+        RESPONSE["result"]: str = "Practice not found"
         return jsonify(RESPONSE), 404
 
-    practice_dict = {
+    practice_dict: dict = {
         "uuid": practice.uuid,
         "name": practice.name,
         "description": practice.description,
