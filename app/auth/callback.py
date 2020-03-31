@@ -67,6 +67,6 @@ def _callback() -> Union[abort, redirect]:
         user = User(unique_id, users_name, users_email, picture)
         login_user(user)
 
-        return redirect("https://www.hackfun.space/")
+        return redirect(request.host_url)
     else:
         return abort(400, "User email not available or not verified by Google.")

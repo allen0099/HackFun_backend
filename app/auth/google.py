@@ -48,4 +48,4 @@ def _login() -> jsonify:
         )
         return redirect(request_uri)
     else:
-        return redirect("https://www.hackfun.space/")
+        return redirect(request.host_url)
