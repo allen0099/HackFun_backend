@@ -33,7 +33,7 @@ def not_in_db(query) -> bool:
         return True
 
 
-@edit.route("/add_tab", methods=["POST"])
+@edit.route("/auth/add_tab", methods=["POST"])
 @login_required
 def add_new_tab():
     _tab = request.values.get("tab")
@@ -48,7 +48,7 @@ def add_new_tab():
     return redirect(url_for("page.edit_page"))
 
 
-@edit.route("/add_course", methods=["POST"])
+@edit.route("/auth/add_course", methods=["POST"])
 @login_required
 def add_new_course():
     _tab = request.values.get("tab")
@@ -66,7 +66,7 @@ def add_new_course():
     return redirect(url_for("page.edit_page"))
 
 
-@edit.route("/edit")
+@edit.route("/auth/edit")
 @login_required
 def edit_page():
     print(current_user)

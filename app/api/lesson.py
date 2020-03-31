@@ -15,6 +15,7 @@ def root_lesson(name) -> jsonify:
 
     RESPONSE["ok"]: bool = True
     RESPONSE["lesson"]: dict = {
+        "id": lesson.id,
         "name": lesson.name,
         "description": lesson.description,
         "url": lesson.url,

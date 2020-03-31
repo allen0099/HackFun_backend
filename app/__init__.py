@@ -26,6 +26,9 @@ def create_app(config_name: str) -> Flask:
     from .auth import bp_callback
     app.register_blueprint(bp_callback)
 
+    from .page import edit as bp_page
+    app.register_blueprint(bp_page)
+
     @app.errorhandler(400)
     def bad_request(error) -> Response:
         return make_response(jsonify({
