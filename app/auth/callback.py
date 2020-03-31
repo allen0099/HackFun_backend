@@ -1,39 +1,17 @@
-import configparser
 import json
+from typing import Union
 
 import requests
-from flask import request, abort, redirect, url_for
+from flask import request, abort, redirect
 from flask_login import login_user
-from oauthlib.oauth2 import WebApplicationClient
 
 from app.auth import bp_callback
+from app.auth.google import client, get_google_provider_cfg, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 from app.models import User
-
-# parse the config and pass them as Google credentials
-config: configparser = configparser.ConfigParser()
-config.read("credentials/google.ini")
-google: dict = config['Google']
-GOOGLE_CLIENT_ID: str = google['ID']
-GOOGLE_CLIENT_SECRET: str = google['Secret']
-GOOGLE_DISCOVERY_URL: str = "https://accounts.google.com/.well-known/openid-configuration"
-
-# OAuth2 client setup
-client = WebApplicationClient(GOOGLE_CLIENT_ID)
-
-
-def get_google_provider_cfg():
-    try:
-        r = requests.get(GOOGLE_DISCOVERY_URL)
-    except requests.exceptions.ConnectionError:
-        return abort(500, "No internet connection")
-    if r.status_code == 200:
-        return r.json()
-    else:
-        return abort(500, "Can't connect to Google now")
 
 
 @bp_callback.route("/google")  # /callback/google
-def _callback():
+def _callback() -> Union[abort, redirect]:
     # Get authorization code Google sent back to you
     code = request.args.get("code")
     if not code:
@@ -89,6 +67,6 @@ def _callback():
         user = User(unique_id, users_name, users_email, picture)
         login_user(user)
 
-        return redirect(url_for("auth._user"))
+        return redirect("https://www.hackfun.space/")
     else:
         return abort(400, "User email not available or not verified by Google.")
