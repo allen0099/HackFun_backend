@@ -1,7 +1,7 @@
 import configparser
 
 import requests
-from flask import jsonify
+from flask import jsonify, redirect
 from flask import request, abort
 from flask_login import current_user
 from oauthlib.oauth2 import WebApplicationClient
@@ -46,14 +46,6 @@ def _login() -> jsonify:
             redirect_uri=request.host_url + "callback/google",
             scope=["openid", "email", "profile"],
         )
-        RESPONSE: dict = {
-            "loggedIn": False,
-            "uri": request_uri
-        }
-        return jsonify(RESPONSE)
+        return redirect(request_uri)
     else:
-        # User not login
-        RESPONSE: dict = {
-            "loggedIn": True
-        }
-        return jsonify(RESPONSE)
+        return redirect("https://www.hackfun.space/")
