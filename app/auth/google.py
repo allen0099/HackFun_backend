@@ -47,13 +47,13 @@ def _login() -> jsonify:
             scope=["openid", "email", "profile"],
         )
         RESPONSE: dict = {
-            "logged-in": False,
+            "loggedIn": False,
             "uri": request_uri
         }
         return jsonify(RESPONSE)
     else:
         # User not login
         RESPONSE: dict = {
-            "logged-in": True
+            "loggedIn": True
         }
         return jsonify(RESPONSE)

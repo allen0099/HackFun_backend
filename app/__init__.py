@@ -1,4 +1,5 @@
 from flask import Flask, make_response, jsonify, url_for, Response
+from flask_cors import CORS
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
@@ -15,6 +16,8 @@ def create_app(config_name: str) -> Flask:
 
     db.init_app(app)
     login_manager.init_app(app)
+
+    CORS(app, origins="127.0.0.1:8080", supports_credentials=True)
 
     from .api import api as bp_api
     app.register_blueprint(bp_api)
