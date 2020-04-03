@@ -17,7 +17,7 @@ def create_app(config_name: str) -> Flask:
     db.init_app(app)
     login_manager.init_app(app)
 
-    CORS(app, origins="127.0.0.1:8080", supports_credentials=True)
+    CORS(app, origins="*", supports_credentials=True)
 
     from .api import api as bp_api
     app.register_blueprint(bp_api)
