@@ -1,7 +1,6 @@
 from sqlalchemy.orm import relationship
 
 from app import db
-from app.models import uuid
 
 
 class Question(db.Model):
@@ -11,12 +10,6 @@ class Question(db.Model):
         db.Integer,
         autoincrement=True,
         primary_key=True
-    )
-    uuid: str = db.Column(
-        db.String(64),
-        default=uuid.generate("choose-"),
-        unique=True,
-        nullable=False
     )
     belong: str = db.Column(
         db.Integer,
