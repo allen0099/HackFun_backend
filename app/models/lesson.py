@@ -1,36 +1,36 @@
-from sqlalchemy import Column
 from sqlalchemy.orm import relationship
 
 from app import db
-from app.models.uuid import generate
+from app.models import uuid
 
 
 class Lesson(db.Model):
-    __tablename__: str = "lesson"
+    __tablename__ = "lesson"
 
-    id: Column = db.Column(
+    id: int = db.Column(
         db.Integer,
+        autoincrement=True,
         primary_key=True
     )
-    uuid: Column = db.Column(
+    uuid: str = db.Column(
         db.String(64),
-        default=generate("lesson-"),
+        default=uuid.generate("lesson-"),
         unique=True,
         nullable=False
     )
-    belong: Column = db.Column(
+    belong: str = db.Column(
         db.String(50),
         db.ForeignKey("course.name")
     )
-    name: Column = db.Column(
+    name: str = db.Column(
         db.String(255),
         unique=True,
         nullable=False
     )
-    description: Column = db.Column(
+    desc: str = db.Column(
         db.Text
     )
-    url: Column = db.Column(
+    url: str = db.Column(
         db.Text
     )
 
@@ -40,5 +40,17 @@ class Lesson(db.Model):
         lazy="dynamic"
     )
 
+    def __init__(
+            self,
+            belong: str,
+            name: str,
+            desc: str = None,
+            url: str = None
+    ) -> None:
+        self.belong = belong
+        self.name = name
+        self.desc = desc
+        self.url = url
+
     def __repr__(self) -> str:
-        return "<Lesson %r>" % self.name
+        return "<Lesson %s>" % self.name

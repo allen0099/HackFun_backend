@@ -1,28 +1,45 @@
-from sqlalchemy import Column
-
 from app import db
 
 
 class Docker(db.Model):
     __tablename__: str = "docker"
 
-    id: Column = db.Column(
+    id: int = db.Column(
         db.Integer,
+        autoincrement=True,
         primary_key=True
     )
-    belong_to: Column = db.Column(
-        db.String(64),
-        db.ForeignKey("practice.uuid")
+    belong: int = db.Column(
+        db.Integer,
+        db.ForeignKey("practice.id")
     )
-    url: Column = db.Column(
+    desc: str = db.Column(
+        db.Text,
+        nullable=False
+    )
+    url: str = db.Column(
         db.Text
     )
-    flag: Column = db.Column(
+    flag: str = db.Column(
         db.Text
     )
-    image: Column = db.Column(
+    image: str = db.Column(
         db.Text
     )
+
+    def __init__(
+            self,
+            belong: int,
+            desc: str,
+            url: str,
+            flag: str,
+            image: str
+    ) -> None:
+        self.belong = belong
+        self.desc = desc  # 題目描述
+        self.url = url
+        self.flag = flag
+        self.image = image
 
     def __repr__(self) -> str:
         return "<Docker %r>" % self.id

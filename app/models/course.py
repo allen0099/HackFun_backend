@@ -1,4 +1,3 @@
-from sqlalchemy import Column
 from sqlalchemy.orm import relationship
 
 from app import db
@@ -7,20 +6,22 @@ from app import db
 class Course(db.Model):
     __tablename__: str = "course"
 
-    id: Column = db.Column(
+    id: int = db.Column(
         db.Integer,
+        autoincrement=True,
         primary_key=True
     )
-    belong: Column = db.Column(
-        db.String(15),
+    belong: str = db.Column(
+        db.String(30),
         db.ForeignKey("tab.name")
     )
-    name: Column = db.Column(
+    name: str = db.Column(
         db.String(50),
+        nullable=False,
         unique=True,
-        nullable=False
+        index=True
     )
-    description: Column = db.Column(
+    desc: str = db.Column(
         db.Text,
         nullable=False
     )
@@ -30,6 +31,21 @@ class Course(db.Model):
         backref="course",
         lazy="dynamic"
     )
+    knowledge: relationship = db.relationship(
+        "Knowledge",
+        backref="course",
+        lazy="dynamic"
+    )
+
+    def __init__(
+            self,
+            belong: str,
+            name: str,
+            desc: str
+    ) -> None:
+        self.belong = belong
+        self.name = name
+        self.desc = desc
 
     def __repr__(self) -> str:
         return "<Course %r>" % self.name

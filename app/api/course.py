@@ -1,35 +1,55 @@
-from flask import jsonify, redirect, url_for
+from flask import jsonify, make_response, Response, redirect, url_for
 
 from app.api import api
 from app.models import Course
 
 
-@api.route("/course/<string:name>")
-def root_course(name) -> jsonify:
-    RESPONSE: dict = {"ok": True}
-    course: Course = Course.query.filter_by(name=name).first()
+@api.route("/course")
+def root_course() -> Response:
+    RESPONSE: dict = {
+        "ok": False,
+        "result": "course id is empty!"
+    }
+    return make_response(jsonify(RESPONSE), 400)
+
+
+@api.route("/course/")
+def redirect_root_course() -> redirect:
+    return redirect(url_for("api.root_course"))
+
+
+@api.route("/course/<int:cid>")
+def search_course(cid: int) -> Response:
+    RESPONSE: dict = dict()
+    course: Course = Course.query.filter_by(id=cid).first()
 
     if not course:
         RESPONSE["ok"]: bool = False
-        RESPONSE["result"]: str = "Course not found"
-        return jsonify(RESPONSE), 404
+        RESPONSE["result"]: str = "ID not found!"
+        return make_response(jsonify(RESPONSE), 404)
 
+    RESPONSE["ok"]: bool = True
     RESPONSE["course"]: dict = {
+        "id": course.id,
         "name": course.name,
-        "description": course.description,
+        "description": course.desc,
+        "prepareKnowledge": [
+            {
+                "description": knowledge.desc
+            } for knowledge in course.knowledge.all()
+        ],
         "lessons": [
             {
+                "id": lesson.id,
                 "name": lesson.name,
-                "description": lesson.description,
-                "uuid": lesson.uuid,
+                "description": lesson.desc,
                 "url": lesson.url
             } for lesson in course.lessons.all()
-        ],
-        "overview": None
+        ]
     }
-    return jsonify(RESPONSE)
+    return make_response(jsonify(RESPONSE))
 
 
-@api.route("/course/<string:name>/")
-def redirect_course(name) -> redirect:
-    return redirect(url_for("api.root_course", name=name))
+@api.route("/course/<int:cid>/")
+def redirect_course(cid) -> redirect:
+    return redirect(url_for("api.search_course", cid=cid))

@@ -10,26 +10,32 @@ from app import db
 class User(db.Model, UserMixin):
     __tablename__: str = "users"
 
-    def __init__(self, id_: str, name: str, email: str, profile_pic: str) -> None:
-        self.id = id_
-        self.name = name
-        self.email = email
-        self.profile_pic = profile_pic
-
     id: str = db.Column(
         db.String(30),
         primary_key=True
     )
     name: str = db.Column(
-        db.String(255)
+        db.Text
     )
     email: str = db.Column(
         db.String(255),
         unique=True
     )
     profile_pic: str = db.Column(
-        db.String(255)
+        db.Text
     )
+
+    def __init__(
+            self,
+            id_: str,
+            name: str,
+            email: str,
+            profile_pic: str
+    ) -> None:
+        self.id = id_
+        self.name = name
+        self.email = email
+        self.profile_pic = profile_pic
 
     def __repr__(self) -> str:
         return f"<User {self.id}>"

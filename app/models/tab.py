@@ -1,4 +1,3 @@
-from sqlalchemy import Column
 from sqlalchemy.orm import relationship
 
 from app import db
@@ -7,15 +6,16 @@ from app import db
 class Tab(db.Model):
     __tablename__: str = "tab"
 
-    id: Column = db.Column(
+    id: int = db.Column(
         db.Integer,
+        autoincrement=True,
         primary_key=True
     )
-
-    name: Column = db.Column(
-        db.String(15),
+    name: str = db.Column(
+        db.String(30),
+        nullable=False,
         unique=True,
-        nullable=False
+        index=True
     )
 
     course: relationship = db.relationship(
@@ -23,6 +23,9 @@ class Tab(db.Model):
         backref="tab",
         lazy="dynamic"
     )
+
+    def __init__(self, name: str) -> None:
+        self.name = name
 
     def __repr__(self) -> str:
         return "<Tab %r>" % self.tab

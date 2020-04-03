@@ -1,36 +1,34 @@
-from sqlalchemy import Column
 from sqlalchemy.orm import relationship
 
 from app import db
-from app.models.uuid import generate
+from app.models import uuid
 
 
 class Practice(db.Model):
-    __tablename__: str = "practice"
+    __tablename__ = "practice"
 
-    id: Column = db.Column(
+    id: int = db.Column(
         db.Integer,
+        autoincrement=True,
         primary_key=True
     )
-    uuid: Column = db.Column(
+    uuid: str = db.Column(
         db.String(64),
-        default=generate(),
+        default=uuid.generate(""),
         unique=True,
         nullable=False
     )
-    belong: Column = db.Column(
+    belong: int = db.Column(
         db.Integer,
         db.ForeignKey("lesson.id")
     )
-    name: Column = db.Column(
-        db.Text,
+    name: str = db.Column(
+        db.String(25),
         nullable=False
     )
-    description: Column = db.Column(
-        db.Text
-    )
-    type: Column = db.Column(
-        db.String(20)
+    type: str = db.Column(
+        db.String(20),
+        nullable=False
     )
 
     hint: relationship = db.relationship(
@@ -38,18 +36,26 @@ class Practice(db.Model):
         backref="practice",
         lazy="dynamic"
     )
-
-    choose: relationship = db.relationship(
-        "Choose",
+    question: relationship = db.relationship(
+        "Question",
         backref="practice",
         lazy="dynamic"
     )
-
     docker: relationship = db.relationship(
         "Docker",
         backref="practice",
         lazy="dynamic"
     )
+
+    def __init__(
+            self,
+            belong: int,
+            name: str,
+            type: str
+    ) -> None:
+        self.belong = belong
+        self.name = name  # 大標題
+        self.type = type  # 種類, docker 或是 choose
 
     def __repr__(self) -> str:
         return "<Practice %r>" % self.name

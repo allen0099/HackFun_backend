@@ -1,26 +1,26 @@
 from app import db
 
 
-class Hint(db.Model):
-    __tablename__: str = "hint"
+class Knowledge(db.Model):
+    __tablename__: str = "knowledge"
 
     id: int = db.Column(
         db.Integer,
         autoincrement=True,
         primary_key=True
     )
-    belong: int = db.Column(
-        db.Integer,
-        db.ForeignKey("practice.id")
+    belong: str = db.Column(
+        db.String(50),
+        db.ForeignKey("course.name")
     )
     desc: str = db.Column(
         db.Text,
         nullable=False
     )
 
-    def __init__(self, belong: int, desc: str) -> None:
+    def __init__(self, belong, desc) -> None:
         self.belong = belong
         self.desc = desc
 
     def __repr__(self) -> str:
-        return "<Hint %r>" % self.id
+        return "<Tab %r>" % self.tab
