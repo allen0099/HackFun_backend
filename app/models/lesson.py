@@ -22,6 +22,9 @@ class Lesson(db.Model):
         db.String(50),
         db.ForeignKey("course.name")
     )
+    lid: int = db.Column(
+        db.Integer
+    )
     name: str = db.Column(
         db.String(255),
         unique=True,

@@ -29,10 +29,23 @@ def search_lesson(lid) -> Response:
         return make_response(jsonify(RESPONSE), 404)
 
     RESPONSE["ok"]: bool = True
+
+    PREV: int = None if lesson.lid == 1 else Lesson.query \
+        .filter_by(belong=lesson.belong) \
+        .filter_by(lid=lesson.lid - 1).first().id
+
+    NEXT: int = None \
+        if lesson.lid == Lesson.query.filter_by(belong=lesson.belong).order_by(Lesson.lid).all()[-1].lid \
+        else Lesson.query \
+        .filter_by(belong=lesson.belong) \
+        .filter_by(lid=lesson.lid + 1).first().id
+
     RESPONSE["lesson"]: dict = {
         "id": lesson.id,
         "uuid": lesson.uuid,
         "name": lesson.name,
+        "prev": PREV,
+        "next": NEXT,
         "description": lesson.desc,
         "url": lesson.url,
         "practices": [
