@@ -44,8 +44,10 @@ def search_lesson(lid) -> Response:
         "id": lesson.id,
         "uuid": lesson.uuid,
         "name": lesson.name,
+        "course": lesson.course.name,
         "prev": PREV,
         "next": NEXT,
+        "index": lesson.lid,
         "description": lesson.desc,
         "url": lesson.url,
         "practices": [
