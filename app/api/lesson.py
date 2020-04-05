@@ -1,7 +1,7 @@
 from flask import jsonify, make_response, Response, redirect, url_for
 
 from app.api import api
-from app.models import Lesson
+from app.models import Lesson, Question, Docker, Practice
 
 
 @api.route("/lesson")
@@ -49,18 +49,61 @@ def search_lesson(lid) -> Response:
         "next": NEXT,
         "index": lesson.lid,
         "description": lesson.desc,
-        "url": lesson.url,
-        "practices": [
-            {
-                "name": practice.name,
-                "uuid": practice.uuid,
-                "type": practice.type
-            } for practice in lesson.practices.all()
-        ]
+        "url": lesson.url
     }
+
+    practices: list = []
+    for practice in lesson.practices.all():
+        practices.append(
+            get_practices(practice)
+        )
+
+    RESPONSE["lesson"]["practices"] = practices
     return make_response(jsonify(RESPONSE))
 
 
 @api.route("/lesson/<int:lid>/")
 def redirect_lesson(lid) -> redirect:
     return redirect(url_for("api.search_lesson", lid=lid))
+
+
+def get_practices(practice: Practice) -> dict:
+    if practice.type == "choose":
+        question: Question = practice.question.first()
+        if question is not None:
+            statement = question.desc
+            url = None
+            option = [
+                {
+                    "id": option.id,
+                    "value": option.desc
+                } for option in question.options.all()
+            ]
+        else:
+            statement = None
+            url = None
+            option = None
+    elif practice.type == "docker":
+        docker: Docker = practice.docker.first()
+        if docker is not None:
+            statement = docker.desc
+            url = docker.url
+            option = None
+        else:
+            statement = None
+            url = None
+            option = None
+    else:
+        statement = "[ERROR]"
+        url = None
+        option = None
+
+    return {
+        "id": practice.id,
+        "uuid": practice.uuid,
+        "name": practice.name,
+        "type": practice.type,
+        "statement": statement,
+        "option": option,
+        "url": url
+    }
