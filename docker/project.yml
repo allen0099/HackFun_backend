@@ -4,12 +4,12 @@ services:
 
   db:
     image: mysql
-    container_name: our_sql
+    container_name: mysql
     restart: always
     ports:
       - 127.0.0.1:32769:3306
     environment:
       MYSQL_ROOT_PASSWORD: meowmeow
     volumes:
-      - ../my-db:/var/lib/mysql
+      - ../../mysql:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/custom.sql

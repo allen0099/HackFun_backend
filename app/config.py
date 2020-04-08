@@ -6,11 +6,11 @@ class Config:
 
     SECRET_KEY: str = None
 
-    SQL_ADMIN: str = "root"
-    SQL_PASSWORD: str = "meowmeow"
-    SQL_LOC: str = "127.0.0.1"
-    SQL_PORT: str = "32769"
-    SQL_SCHEMA: str = "testing"
+    SQL_ADMIN: str = ""
+    SQL_PASSWORD: str = ""
+    SQL_LOC: str = ""
+    SQL_PORT: str = ""
+    SQL_SCHEMA: str = ""
 
     SQLALCHEMY_DATABASE_URI: str = f"mysql://{SQL_ADMIN}:{SQL_PASSWORD}@{SQL_LOC}:{SQL_PORT}/{SQL_SCHEMA}"
 
@@ -39,11 +39,11 @@ class ProductionConfig(Config):
 
     sql: dict = sql_config["sql"]
 
-    SQL_ADMIN: str = sql["admin"]
-    SQL_PASSWORD: str = sql["password"]
-    SQL_LOC: str = sql["loc"]
-    SQL_PORT: str = sql["port"]
-    SQL_SCHEMA: str = sql["schema"]
+    SQL_ADMIN: str = sql.get("admin")
+    SQL_PASSWORD: str = sql.get("password")
+    SQL_LOC: str = sql.get("loc")
+    SQL_PORT: str = sql.get("port")
+    SQL_SCHEMA: str = sql.get("schema")
     SQLALCHEMY_DATABASE_URI: str = f"mysql://{SQL_ADMIN}:{SQL_PASSWORD}@{SQL_LOC}:{SQL_PORT}/{SQL_SCHEMA}"
 
 

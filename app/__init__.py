@@ -9,9 +9,7 @@ db: SQLAlchemy = SQLAlchemy()
 
 login_manager: LoginManager = LoginManager()
 
-# TODO build docker
 
-# TODO remove .idea from git
 def create_app(config_name: str) -> Flask:
     app: Flask = Flask(__name__)
     app.config.from_object(config[config_name])
@@ -27,9 +25,6 @@ def create_app(config_name: str) -> Flask:
     app.register_blueprint(bp_auth)
     from .auth import bp_callback
     app.register_blueprint(bp_callback)
-
-    from .page import edit as bp_page
-    app.register_blueprint(bp_page)
 
     @app.errorhandler(400)
     def bad_request(error) -> Response:
