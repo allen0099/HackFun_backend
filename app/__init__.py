@@ -9,7 +9,9 @@ db: SQLAlchemy = SQLAlchemy()
 
 login_manager: LoginManager = LoginManager()
 
+# TODO build docker
 
+# TODO remove .idea from git
 def create_app(config_name: str) -> Flask:
     app: Flask = Flask(__name__)
     app.config.from_object(config[config_name])

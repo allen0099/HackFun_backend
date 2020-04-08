@@ -9,41 +9,36 @@ Package listed in `requirements.txt`
 ### Install
 
 testing at Ubuntu 18.04  
+> clone the project
 ```shell script
-# clone the project
 git clone git@github.com:allen0099/backend
 cd backend
-
-# intsall python 3.7
+```
+> setup python3 virtual environment
+```shell script
 sudo apt update
 sudo apt install software-properties-common
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt install python3.7 python3.7-dev python3.7-venv python3.7-doc binfmt-support
-# intsall mysql requirements
+# install mysql requirements
 sudo apt install libmysqlclient-dev mysql-server
 
-# create vitural environment
 python3.7 -m venv venv
-# activate vitural environment
 source venv/bin/activate
-# install requirements.txt
 pip install -r requirements.txt
-
-# edit the docker config
-vim ./docker/project.yml
-# make sure you have docker and docker-compose already
-chmod +x ./docker/startDockerCompose.sh
+```
+> MySQL database docker compose
+```shell script
 ./docker/startDockerCompose.sh
-
-# build database
-chmod +x startFlaskShell.sh
+```
+> Flask shell
+```shell script
+cd ./sh
 ./startFlaskShell.sh
 >>> db.create_all()
->>> from app.models import *
 >>> exit
 # start the server
-chmod +x ./sh/startFlaskServer.sh
-./sh/startFlaskServer.sh
+./startFlaskServer.sh
 ```
 > **WARNING**: listen at 0.0.0.0 may cause some horrible problem, use at your own risk
 ```shell script
@@ -57,7 +52,7 @@ sudo systemctl start backend.service
 sudo systemctl enable backend.service
 ```
 > setup nginx config
-```
+```shell script
 # edit nginx config
 sudo cp backend /etc/nginx/sites-available/backend
 sudo ln -s /etc/nginx/sites-available/backend /etc/nginx/sites-enabled
