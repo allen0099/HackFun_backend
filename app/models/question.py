@@ -4,14 +4,14 @@ from app import db
 
 
 class Question(db.Model):
-    __tablename__ = "question"
+    __tablename__: str = "question"
 
     id: int = db.Column(
         db.Integer,
         autoincrement=True,
         primary_key=True
     )
-    belong: str = db.Column(
+    belong: int = db.Column(
         db.Integer,
         db.ForeignKey("practice.id")
     )
@@ -31,4 +31,4 @@ class Question(db.Model):
         self.desc = desc  # 題目描述
 
     def __repr__(self) -> str:
-        return "<Question %r>" % self
+        return f"<Question {self.id}>"

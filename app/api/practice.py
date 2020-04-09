@@ -37,7 +37,7 @@ def search_practice(uuid) -> Response:
     }
 
     if practice.type == "choose":
-        RESPONSE["practice"]["questions"] = [
+        RESPONSE["practice"]["questions"]: list = [
             {
                 "statement": question.desc,
                 "options": [
@@ -49,7 +49,7 @@ def search_practice(uuid) -> Response:
             } for question in practice.question.all()
         ]
     elif practice.type == "docker":
-        RESPONSE["practice"]["docker"] = [
+        RESPONSE["practice"]["docker"]: list = [
             {
                 "statement": docker.desc,
                 "url": docker.url
@@ -64,5 +64,5 @@ def search_practice(uuid) -> Response:
 
 
 @api.route("/practice/<uuid:uuid>/")
-def redirect_practice(uuid):
+def redirect_practice(uuid) -> redirect:
     return redirect(url_for("api.search_practice", uuid=uuid))

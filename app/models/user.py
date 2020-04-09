@@ -27,12 +27,12 @@ class User(db.Model, UserMixin):
 
     def __init__(
             self,
-            id_: str,
+            user_id: str,
             name: str,
             email: str,
             profile_pic: str
     ) -> None:
-        self.id = id_
+        self.id = user_id
         self.name = name
         self.email = email
         self.profile_pic = profile_pic
@@ -42,7 +42,7 @@ class User(db.Model, UserMixin):
 
     @staticmethod
     def update(user_id: str, name: str, email: str, pic: str) -> Union[str, None]:
-        user = User.get(user_id)
+        user: User = User.get(user_id)
         if user is None:
             return "UserNotFound"
         User.query.filter_by(id=user_id) \
@@ -53,7 +53,7 @@ class User(db.Model, UserMixin):
 
     @staticmethod
     def add(user_id: str, name: str, email: str, pic: str) -> Union[None, str]:
-        check = User.query.filter_by(id=user_id).first()
+        check: User = User.query.filter_by(id=user_id).first()
         if check is None:
             db.session.add(User(user_id,
                                 name,
@@ -66,11 +66,11 @@ class User(db.Model, UserMixin):
 
     @staticmethod
     def get(uid: str) -> Union[User, None]:
-        user = User.query.filter_by(id=uid).first()
+        user: User = User.query.filter_by(id=uid).first()
         if user is None:
             return None
         return User(
-            id_=user.id,
+            user_id=user.id,
             name=user.name,
             email=user.email,
             profile_pic=user.profile_pic

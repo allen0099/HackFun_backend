@@ -42,4 +42,4 @@ class Docker(db.Model):
         self.image = image
 
     def __repr__(self) -> str:
-        return "<Docker %r>" % self.id
+        return f"<Docker {self.id}>"

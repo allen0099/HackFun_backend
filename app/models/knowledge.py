@@ -23,4 +23,4 @@ class Knowledge(db.Model):
         self.desc = desc
 
     def __repr__(self) -> str:
-        return "<Tab %r>" % self.tab
+        return f"<Knowledge {self.id}>"

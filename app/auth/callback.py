@@ -1,8 +1,7 @@
 import json
-from typing import Union
 
 import requests
-from flask import request, abort, redirect
+from flask import request, abort, redirect, Response
 from flask_login import login_user
 
 from app.auth import bp_callback
@@ -11,9 +10,9 @@ from app.models import User
 
 
 @bp_callback.route("/google")  # /callback/google
-def _callback() -> Union[abort, redirect]:
+def _callback() -> Response:
     # Get authorization code Google sent back to you
-    code = request.args.get("code")
+    code: str = request.args.get("code")
     if not code:
         return abort(400)
 
@@ -52,10 +51,10 @@ def _callback() -> Union[abort, redirect]:
     # The user authenticated with Google, authorized your
     # app, and now you've verified their email through Google!
     if userinfo_response.json().get("email_verified"):
-        unique_id = userinfo_response.json()["sub"]
-        users_email = userinfo_response.json()["email"]
-        picture = userinfo_response.json()["picture"]
-        users_name = userinfo_response.json()["given_name"]
+        unique_id: str = userinfo_response.json()["sub"]
+        users_email: str = userinfo_response.json()["email"]
+        picture: str = userinfo_response.json()["picture"]
+        users_name: str = userinfo_response.json()["given_name"]
 
         # update user's data each time user login
         if User.get(unique_id) is None:
@@ -64,7 +63,7 @@ def _callback() -> Union[abort, redirect]:
             User.update(unique_id, users_name, users_email, picture)
 
         # Login user
-        user = User(unique_id, users_name, users_email, picture)
+        user: User = User(unique_id, users_name, users_email, picture)
         login_user(user)
 
         return redirect(request.host_url)

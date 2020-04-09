@@ -58,7 +58,7 @@ def search_lesson(lid) -> Response:
             get_practices(practice)
         )
 
-    RESPONSE["lesson"]["practices"] = practices
+    RESPONSE["lesson"]["practices"]: list = practices
     return make_response(jsonify(RESPONSE))
 
 

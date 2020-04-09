@@ -5,7 +5,7 @@ from app.models import uuid
 
 
 class Lesson(db.Model):
-    __tablename__ = "lesson"
+    __tablename__: str = "lesson"
 
     id: int = db.Column(
         db.Integer,
@@ -46,14 +46,16 @@ class Lesson(db.Model):
     def __init__(
             self,
             belong: str,
+            lid: int,
             name: str,
             desc: str = None,
             url: str = None
     ) -> None:
         self.belong = belong
+        self.lid = lid
         self.name = name
         self.desc = desc
         self.url = url
 
     def __repr__(self) -> str:
-        return "<Lesson %s>" % self.name
+        return f"<Lesson {self.name}>"

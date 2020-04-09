@@ -28,4 +28,4 @@ class Tab(db.Model):
         self.name = name
 
     def __repr__(self) -> str:
-        return "<Tab %r>" % self.tab
+        return f"<Tab {self.name}>"

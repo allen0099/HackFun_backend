@@ -23,4 +23,4 @@ class Hint(db.Model):
         self.desc = desc
 
     def __repr__(self) -> str:
-        return "<Hint %r>" % self.id
+        return f"<Hint {self.id}>"

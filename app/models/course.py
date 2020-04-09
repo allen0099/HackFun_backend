@@ -48,4 +48,4 @@ class Course(db.Model):
         self.desc = desc
 
     def __repr__(self) -> str:
-        return "<Course %r>" % self.name
+        return f"<Course {self.name}>"

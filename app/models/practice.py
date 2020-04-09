@@ -58,4 +58,4 @@ class Practice(db.Model):
         self.type = type  # 種類, docker 或是 choose
 
     def __repr__(self) -> str:
-        return "<Practice %r>" % self.name
+        return f"<Practice {self.name}>"
