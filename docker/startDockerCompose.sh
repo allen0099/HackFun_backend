@@ -1,3 +1,3 @@
 #! /bin/bash
 
-docker-compose -f ./docker/project.yml up -d
+docker-compose -f ./project.yml up -d
