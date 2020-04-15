@@ -1,1 +1,3 @@
-# TODO add post new tabs, course, lesson, and any database executions
+# TODO 接收傳進來的東西
+#   Flag 或是其他有的沒的的內容
+#   使用者時間紀錄等等
