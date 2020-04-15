@@ -34,14 +34,14 @@ def search_course(cid: int) -> Response:
         "name": course.name,
         "description": course.desc,
         "prepareKnowledge": [
-            knowledge.desc for knowledge in course.knowledge.all()
+            knowledge.name for knowledge in course.knowledge.all()
         ],
         "lessons": [
             {
                 "id": lesson.id,
                 "name": lesson.name,
-                "description": lesson.desc,
-                "url": lesson.url
+                "description": lesson.name,
+                "url": lesson.vid_url
             } for lesson in course.lessons.all()
         ]
     }

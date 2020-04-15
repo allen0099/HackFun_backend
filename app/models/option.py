@@ -1,8 +1,8 @@
 from app import db
 
 
-class Options(db.Model):
-    __tablename__: str = "options"
+class Option(db.Model):
+    __tablename__: str = "option"
 
     id: int = db.Column(
         db.Integer,
@@ -11,22 +11,22 @@ class Options(db.Model):
     )
     belong: int = db.Column(
         db.Integer,
-        db.ForeignKey("question.id")
+        db.ForeignKey("choose.id")
     )
-    desc: str = db.Column(
+    statement: str = db.Column(
         db.Text,
         nullable=False
     )
-    ans: bool = db.Column(
+    is_ans: bool = db.Column(
         db.Boolean,
         default=False,
         nullable=False
     )
 
-    def __init__(self, belong, desc, ans) -> None:
+    def __init__(self, belong, statement, is_ans) -> None:
         self.belong = belong
-        self.desc = desc
-        self.ans = ans
+        self.statement = statement
+        self.is_ans = is_ans
 
     def __repr__(self) -> str:
-        return f"<Options {self.id}>"
+        return f"<Option {self.id}>"

@@ -14,7 +14,7 @@ class Practice(db.Model):
     )
     uuid: str = db.Column(
         db.String(64),
-        default=uuid.generate(""),
+        default=uuid.generate(),
         unique=True,
         nullable=False
     )
@@ -26,18 +26,9 @@ class Practice(db.Model):
         db.String(25),
         nullable=False
     )
-    type: str = db.Column(
-        db.String(20),
-        nullable=False
-    )
 
-    hint: relationship = db.relationship(
-        "Hint",
-        backref="practice",
-        lazy="dynamic"
-    )
-    question: relationship = db.relationship(
-        "Question",
+    choose: relationship = db.relationship(
+        "Choose",
         backref="practice",
         lazy="dynamic"
     )
@@ -46,16 +37,19 @@ class Practice(db.Model):
         backref="practice",
         lazy="dynamic"
     )
+    hint: relationship = db.relationship(
+        "Hint",
+        backref="practice",
+        lazy="dynamic"
+    )
 
     def __init__(
             self,
             belong: int,
-            name: str,
-            type: str
+            name: str
     ) -> None:
         self.belong = belong
         self.name = name  # 大標題
-        self.type = type  # 種類, docker 或是 choose
 
     def __repr__(self) -> str:
         return f"<Practice {self.name}>"

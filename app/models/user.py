@@ -8,7 +8,7 @@ from app import db
 
 
 class User(db.Model, UserMixin):
-    __tablename__: str = "users"
+    __tablename__: str = "user"
 
     id: str = db.Column(
         db.String(30),

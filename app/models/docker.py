@@ -18,10 +18,12 @@ class Docker(db.Model):
         nullable=False
     )
     url: str = db.Column(
-        db.Text
+        db.Text,
+        nullable=False
     )
-    flag: str = db.Column(
-        db.Text
+    port: int = db.Column(
+        db.Integer,
+        nullable=False
     )
     image: str = db.Column(
         db.Text
@@ -32,13 +34,13 @@ class Docker(db.Model):
             belong: int,
             desc: str,
             url: str,
-            flag: str,
+            port: int,
             image: str
     ) -> None:
         self.belong = belong
         self.desc = desc  # 題目描述
         self.url = url
-        self.flag = flag
+        self.port = port
         self.image = image
 
     def __repr__(self) -> str:

@@ -14,7 +14,7 @@ class Lesson(db.Model):
     )
     uuid: str = db.Column(
         db.String(64),
-        default=uuid.generate("lesson-"),
+        default=uuid.generate(),
         unique=True,
         nullable=False
     )
@@ -22,7 +22,7 @@ class Lesson(db.Model):
         db.String(50),
         db.ForeignKey("course.name")
     )
-    lid: int = db.Column(
+    order_id: int = db.Column(
         db.Integer
     )
     name: str = db.Column(
@@ -33,7 +33,7 @@ class Lesson(db.Model):
     desc: str = db.Column(
         db.Text
     )
-    url: str = db.Column(
+    vid_url: str = db.Column(
         db.Text
     )
 
@@ -46,16 +46,16 @@ class Lesson(db.Model):
     def __init__(
             self,
             belong: str,
-            lid: int,
+            order_id: int,
             name: str,
             desc: str = None,
-            url: str = None
+            vid_url: str = None
     ) -> None:
         self.belong = belong
-        self.lid = lid
+        self.order_id = order_id
         self.name = name
         self.desc = desc
-        self.url = url
+        self.vid_url = vid_url
 
     def __repr__(self) -> str:
         return f"<Lesson {self.name}>"

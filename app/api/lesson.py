@@ -1,7 +1,7 @@
 from flask import jsonify, make_response, Response, redirect, url_for
 
 from app.api import api
-from app.models import Lesson, Question, Docker, Practice
+from app.models import Lesson, Choose, Docker, Practice
 
 
 @api.route("/lesson")
@@ -30,15 +30,19 @@ def search_lesson(lid) -> Response:
 
     RESPONSE["ok"]: bool = True
 
-    PREV: int = None if lesson.lid == 1 else Lesson.query \
-        .filter_by(belong=lesson.belong) \
-        .filter_by(lid=lesson.lid - 1).first().id
-
-    NEXT: int = None \
-        if lesson.lid == Lesson.query.filter_by(belong=lesson.belong).order_by(Lesson.lid).all()[-1].lid \
+    PREV: int = None \
+        if lesson.order_id == 1 \
         else Lesson.query \
         .filter_by(belong=lesson.belong) \
-        .filter_by(lid=lesson.lid + 1).first().id
+        .filter_by(order_id=lesson.order_id - 1).first().id
+
+    NEXT: int = None \
+        if lesson.order_id == Lesson.query \
+        .filter_by(belong=lesson.belong) \
+        .order_by(Lesson.order_id).all()[-1].order_id \
+        else Lesson.query \
+        .filter_by(belong=lesson.belong) \
+        .filter_by(order_id=lesson.order_id + 1).first().id
 
     RESPONSE["lesson"]: dict = {
         "id": lesson.id,
@@ -47,15 +51,15 @@ def search_lesson(lid) -> Response:
         "course": lesson.course.name,
         "prev": PREV,
         "next": NEXT,
-        "index": lesson.lid,
+        "index": lesson.order_id,
         "description": lesson.desc,
-        "url": lesson.url
+        "vid_url": lesson.vid_url
     }
 
     practices: list = []
     for practice in lesson.practices.all():
         practices.append(
-            get_practices(practice)
+            get_practice(practice)
         )
 
     RESPONSE["lesson"]["practices"]: list = practices
@@ -67,43 +71,40 @@ def redirect_lesson(lid) -> redirect:
     return redirect(url_for("api.search_lesson", lid=lid))
 
 
-def get_practices(practice: Practice) -> dict:
-    if practice.type == "choose":
-        question: Question = practice.question.first()
-        if question is not None:
-            statement = question.desc
-            url = None
-            option = [
-                {
-                    "id": option.id,
-                    "value": option.desc
-                } for option in question.options.all()
-            ]
-        else:
-            statement = None
-            url = None
-            option = None
-    elif practice.type == "docker":
-        docker: Docker = practice.docker.first()
-        if docker is not None:
-            statement = docker.desc
-            url = docker.url
-            option = None
-        else:
-            statement = None
-            url = None
-            option = None
-    else:
-        statement = "[ERROR]"
-        url = None
-        option = None
+def get_practice(practice: Practice) -> dict:
+    choose = None
+    docker = None
+    if practice.choose.first():
+        practice.type = "choose"
+        _choose: Choose = practice.choose.first()
+        if _choose is not None:
+            choose = {
+                "statement": _choose.statement,
+                "options": [
+                    {
+                        "id": option.id,
+                        "value": option.statement
+                    } for option in _choose.option.all()
+                ]
+            }
+    elif practice.docker.first():
+        practice.type = "docker"
+        _docker: Docker = practice.docker.first()
+        if _docker is not None:
+            docker = {
+                "description": _docker.desc,
+                "url": _docker.url,
+                "port": _docker.port
+            }
 
     return {
         "id": practice.id,
         "uuid": practice.uuid,
         "name": practice.name,
+        "hints": [
+            hint.desc for hint in practice.hint.all()
+        ],
         "type": practice.type,
-        "statement": statement,
-        "option": option,
-        "url": url
+        "choose": choose,
+        "docker": docker
     }

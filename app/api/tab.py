@@ -19,7 +19,7 @@ def root_tab() -> Response:
             {
                 "id": course.id,
                 "name": course.name,
-                "description": course.desc
+                "description": course.name
             } for course in tab.course.all()
         ] for tab in tabs
     }
