@@ -1,5 +1,4 @@
 # Project relative file ignore
-my-db
 credentials/
 
 .idea/sonarlint/issuestore
