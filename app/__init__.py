@@ -29,7 +29,7 @@ def create_app(config_name: str) -> Flask:
     @app.errorhandler(400)
     def bad_request(error) -> Response:
         return make_response(jsonify({
-            "error": "Bad request",
+            "error": "Bad Request",
             "reason": error.get_description()[3:-4]
         }), 400)
 
@@ -44,9 +44,16 @@ def create_app(config_name: str) -> Flask:
     @app.errorhandler(404)
     def not_found(error) -> Response:
         return make_response(jsonify({
-            "error": "Not found",
+            "error": "Not Found",
             "reason": error.get_description()[3:-4]
         }), 404)
+
+    @app.errorhandler(405)
+    def not_found(error) -> Response:
+        return make_response(jsonify({
+            "error": "Method Not Allowed",
+            "reason": error.get_description()[3:-4]
+        }), 405)
 
     @app.errorhandler(500)
     def internal_server_error(error) -> Response:
