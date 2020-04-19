@@ -28,7 +28,7 @@ def root_flag() -> Response:
             RESPONSE["ok"] = True
             RESPONSE["result"] = "Flag submitted!"
         RESPONSE["time"] = int(time.time())
-        # TODO add user check
+        # TODO user check
         # TODO time record
         # TODO has done check
         uid = session["_user_id"]
