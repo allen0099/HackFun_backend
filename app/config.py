@@ -21,6 +21,7 @@ class DevConfig(Config):
     SECRET_KEY: str = "dev"
 
     SQL_ADMIN: str = "root"
+    # SESSION_PROTECTION = "strong"
     SQL_PASSWORD: str = "meowmeow"
     SQL_LOC: str = "127.0.0.1"
     SQL_PORT: str = "32769"
