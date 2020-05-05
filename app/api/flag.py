@@ -31,7 +31,7 @@ def root_flag() -> Response:
         # TODO user check
         # TODO time record
         # TODO has done check
-        uid = session["_user_id"]
+        # uid = session.get("_user_id")
 
         return make_response(jsonify(RESPONSE))
     else:
