@@ -18,9 +18,9 @@ class Lesson(db.Model):
         unique=True,
         nullable=False
     )
-    belong: str = db.Column(
-        db.String(50),
-        db.ForeignKey("course.name")
+    course_id: int = db.Column(
+        db.Integer,
+        db.ForeignKey("course.id")
     )
     order_id: int = db.Column(
         db.Integer

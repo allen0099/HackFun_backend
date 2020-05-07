@@ -11,9 +11,9 @@ class Course(db.Model):
         autoincrement=True,
         primary_key=True
     )
-    belong: str = db.Column(
-        db.String(30),
-        db.ForeignKey("tab.name")
+    tab_id: int = db.Column(
+        db.Integer,
+        db.ForeignKey("tab.id")
     )
     name: str = db.Column(
         db.String(50),

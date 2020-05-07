@@ -9,7 +9,7 @@ class Option(db.Model):
         autoincrement=True,
         primary_key=True
     )
-    belong: int = db.Column(
+    choose_id: int = db.Column(
         db.Integer,
         db.ForeignKey("choose.id")
     )

@@ -33,15 +33,15 @@ def search_lesson(lid) -> Response:
     PREV: int = None \
         if lesson.order_id == 1 \
         else Lesson.query \
-        .filter_by(belong=lesson.belong) \
+        .filter_by(course_id=lesson.course_id) \
         .filter_by(order_id=lesson.order_id - 1).first().id
 
     NEXT: int = None \
         if lesson.order_id == Lesson.query \
-        .filter_by(belong=lesson.belong) \
+        .filter_by(course_id=lesson.course_id) \
         .order_by(Lesson.order_id).all()[-1].order_id \
         else Lesson.query \
-        .filter_by(belong=lesson.belong) \
+        .filter_by(course_id=lesson.course_id) \
         .filter_by(order_id=lesson.order_id + 1).first().id
 
     RESPONSE["lesson"]: dict = {

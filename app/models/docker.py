@@ -9,7 +9,7 @@ class Docker(db.Model):
         autoincrement=True,
         primary_key=True
     )
-    belong: int = db.Column(
+    practice_id: int = db.Column(
         db.Integer,
         db.ForeignKey("practice.id")
     )

@@ -9,7 +9,7 @@ class Knowledge(db.Model):
         autoincrement=True,
         primary_key=True
     )
-    belong: int = db.Column(
+    course_id: int = db.Column(
         db.Integer,
         db.ForeignKey("course.id")
     )

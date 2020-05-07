@@ -11,7 +11,7 @@ class Flag(db.Model):
         primary_key=True
     )
     # belong
-    docker: id = db.Column(
+    docker_id: int = db.Column(
         db.Integer,
         db.ForeignKey("docker.id")
     )

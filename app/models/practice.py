@@ -18,7 +18,7 @@ class Practice(db.Model):
         unique=True,
         nullable=False
     )
-    belong: int = db.Column(
+    lesson_id: int = db.Column(
         db.Integer,
         db.ForeignKey("lesson.id")
     )
