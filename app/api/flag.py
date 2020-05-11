@@ -2,7 +2,7 @@
 #   https://github.com/mbr/flask-kvsession
 import time
 
-from flask import jsonify, make_response, Response, redirect, url_for, request, session
+from flask import jsonify, make_response, Response, redirect, url_for, request
 from flask_login import current_user
 
 from app import login_manager
@@ -15,18 +15,27 @@ def root_flag() -> Response:
     if current_user.is_authenticated:
         RESPONSE: dict = {
             "ok": False,
-            "result": "Check your parameters and try again!"
+            "result": ""
         }
-        content: dict = request.json
-        if content.get("flag") == None:
+        content: dict = request.json or dict()
+        if content.get("flag", None) == None:
+            RESPONSE["result"] = "Flag missing!"
             return make_response(jsonify(RESPONSE), 400)
+        else:
+            post_flag: str = content["flag"]
+        if content.get("uuid") == None:
+            RESPONSE["result"] = "UUID missing!"
+            return make_response(jsonify(RESPONSE), 400)
+        else:
+            post_uuid: str = content["uuid"]
 
-        flag: Flag = Flag.query.filter_by(flag=content.get("flag")).first()
-        if flag is None:
+        flag: Flag = Flag.query.filter_by(flag=post_flag).first()
+        if flag is None or post_uuid != flag.docker.practice.uuid:
+            RESPONSE["result"] = "Invalid data!"
             return make_response(jsonify(RESPONSE), 404)
         else:
             RESPONSE["ok"] = True
-            RESPONSE["result"] = "Flag submitted!"
+            RESPONSE["result"] = "Valid data!"
         RESPONSE["time"] = int(time.time())
         # TODO user check
         # TODO time record
