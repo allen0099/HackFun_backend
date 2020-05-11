@@ -1,3 +1,5 @@
+from sqlalchemy.orm import relationship
+
 from app import db
 
 
@@ -27,6 +29,12 @@ class Docker(db.Model):
     )
     image: str = db.Column(
         db.Text
+    )
+
+    flag: relationship = db.relationship(
+        "Flag",
+        backref="docker",
+        lazy="dynamic"
     )
 
     def __init__(
