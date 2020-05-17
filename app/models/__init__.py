@@ -1,4 +1,5 @@
 from .choose import Choose
+from .complete import Complete
 from .course import Course
 from .docker import Docker
 from .flag import Flag

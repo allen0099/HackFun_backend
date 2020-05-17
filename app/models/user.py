@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Union
 
 from flask_login import UserMixin
+from sqlalchemy.orm import relationship
 
 from app import db
 
@@ -23,6 +24,12 @@ class User(db.Model, UserMixin):
     )
     profile_pic: str = db.Column(
         db.Text
+    )
+
+    complete: relationship = db.relationship(
+        "Complete",
+        backref="user",
+        lazy="dynamic"
     )
 
     def __init__(
