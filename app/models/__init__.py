@@ -10,3 +10,4 @@ from .option import Option
 from .practice import Practice
 from .tab import Tab
 from .user import User
+from .visited import Visited
