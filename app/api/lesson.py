@@ -6,11 +6,11 @@ from app.models import Lesson, Choose, Docker, Practice
 
 @api.route("/lesson")
 def root_lesson() -> Response:
-    RESPONSE: dict = {
+    response: dict = {
         "ok": False,
         "result": "lesson id is empty!"
     }
-    return make_response(jsonify(RESPONSE), 400)
+    return make_response(jsonify(response), 400)
 
 
 @api.route("/lesson/")
@@ -20,23 +20,23 @@ def redirect_root_lesson() -> redirect:
 
 @api.route("/lesson/<int:lid>")
 def search_lesson(lid) -> Response:
-    RESPONSE: dict = dict()
+    response: dict = dict()
     lesson: Lesson = Lesson.query.filter_by(id=lid).first()
 
     if not lesson:
-        RESPONSE["ok"]: bool = False
-        RESPONSE["result"]: str = "ID not found!"
-        return make_response(jsonify(RESPONSE), 404)
+        response["ok"]: bool = False
+        response["result"]: str = "ID not found!"
+        return make_response(jsonify(response), 404)
 
-    RESPONSE["ok"]: bool = True
+    response["ok"]: bool = True
 
-    PREV: int = None \
+    _prev: int = None \
         if lesson.order_id == 1 \
         else Lesson.query \
         .filter_by(course_id=lesson.course_id) \
         .filter_by(order_id=lesson.order_id - 1).first().id
 
-    NEXT: int = None \
+    _next: int = None \
         if lesson.order_id == Lesson.query \
         .filter_by(course_id=lesson.course_id) \
         .order_by(Lesson.order_id).all()[-1].order_id \
@@ -44,13 +44,13 @@ def search_lesson(lid) -> Response:
         .filter_by(course_id=lesson.course_id) \
         .filter_by(order_id=lesson.order_id + 1).first().id
 
-    RESPONSE["lesson"]: dict = {
+    response["lesson"]: dict = {
         "id": lesson.id,
         "uuid": lesson.uuid,
         "name": lesson.name,
         "course": lesson.course.name,
-        "prev": PREV,
-        "next": NEXT,
+        "prev": _prev,
+        "next": _next,
         "index": lesson.order_id,
         "description": lesson.desc,
         "vid_url": lesson.vid_url
@@ -62,8 +62,8 @@ def search_lesson(lid) -> Response:
             get_practice(practice)
         )
 
-    RESPONSE["lesson"]["practices"]: list = practices
-    return make_response(jsonify(RESPONSE))
+    response["lesson"]["practices"]: list = practices
+    return make_response(jsonify(response))
 
 
 @api.route("/lesson/<int:lid>/")
