@@ -1,7 +1,7 @@
-from flask import jsonify, make_response, Response, redirect, url_for
+from flask import jsonify, make_response, Response, redirect, url_for, session
 
 from app.api import api
-from app.models import Lesson, Choose, Docker, Practice
+from app.models import Lesson, Choose, Docker, Practice, Visited
 
 
 @api.route("/lesson")
@@ -27,6 +27,11 @@ def search_lesson(lid) -> Response:
         response["ok"]: bool = False
         response["result"]: str = "ID not found!"
         return make_response(jsonify(response), 404)
+
+    uid: str = session.get("_user_id") or session.get("user_id")
+
+    if uid is not None:
+        Visited.add(uid, lid)
 
     response["ok"]: bool = True
 
