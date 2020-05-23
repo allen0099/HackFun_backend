@@ -32,8 +32,8 @@ def root_profile() -> Response:
                 latest.append(_)
 
     response["personal"]: dict = {
-        "lesson": latest[0].lesson_id,
-        "time": latest[0].timestamp,
+        "lesson": latest[0].lesson_id if len(latest) > 0 else None,
+        "time": latest[0].timestamp if len(latest) > 0 else None,
         "latest": [
             {
                 "lesson": visited.lesson_id,
