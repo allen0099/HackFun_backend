@@ -19,7 +19,7 @@ def redirect_root_lesson() -> redirect:
 
 
 @api.route("/lesson/<int:lid>")
-def search_lesson(lid) -> Response:
+def search_lesson(lid: int) -> Response:
     response: dict = dict()
     lesson: Lesson = Lesson.query.filter_by(id=lid).first()
 

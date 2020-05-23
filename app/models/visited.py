@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from app import db
 
 
@@ -14,19 +16,19 @@ class Visited(db.Model):
         db.ForeignKey("user.id"),
         nullable=False
     )
-    lesson_id: str = db.Column(
+    lesson_id: int = db.Column(
         db.Integer,
         db.ForeignKey("lesson.id"),
         nullable=False
     )
-    timestamp = db.Column(
+    timestamp: datetime = db.Column(
         db.TIMESTAMP(),
         server_default=db.func.now()
     )
 
     def __init__(self,
                  user_id: str,
-                 lesson_id: str) -> None:
+                 lesson_id: int) -> None:
         self.user_id = user_id
         self.lesson_id = lesson_id
 
@@ -34,6 +36,6 @@ class Visited(db.Model):
         return f"<Visited {self.id}>"
 
     @staticmethod
-    def add(user_id: str, lesson_id: str) -> None:
+    def add(user_id: str, lesson_id: int) -> None:
         db.session.add(Visited(user_id, lesson_id))
         db.session.commit()

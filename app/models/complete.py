@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from app import db
 
 
@@ -19,7 +21,7 @@ class Complete(db.Model):
         db.ForeignKey("practice.uuid"),
         nullable=False
     )
-    timestamp = db.Column(
+    timestamp: datetime = db.Column(
         db.TIMESTAMP(),
         server_default=db.func.now()
     )
