@@ -2,9 +2,10 @@ from typing import List
 
 from flask import Response, session, make_response, jsonify
 from flask_login import login_required
+from sqlalchemy import desc
 
 from app.api import api
-from app.models import Lesson, Practice, Complete, Course
+from app.models import Lesson, Practice, Complete, Course, Visited
 
 
 @api.route("/profile")
@@ -16,10 +17,29 @@ def root_profile() -> Response:
         "uid": uid
     }
 
+    all_visits: List[Visited] = Visited \
+        .query \
+        .filter_by(user_id=uid) \
+        .order_by(desc(Visited.timestamp)) \
+        .all()
+
+    latest: List[Visited] = []
+    lesson_ids: List[str] = []
+    for _ in all_visits:
+        if _.lesson_id not in lesson_ids:
+            lesson_ids.append(_.lesson_id)
+            if len(latest) < 5:
+                latest.append(_)
+
     response["personal"]: dict = {
-        "lesson": None,
-        "time": None,
-        "latest": []
+        "lesson": latest[0].lesson_id,
+        "time": latest[0].timestamp,
+        "latest": [
+            {
+                "lesson": visited.lesson_id,
+                "time": visited.timestamp
+            } for visited in latest
+        ]
     }
     courses: List[Course] = Course.query.all()
 
