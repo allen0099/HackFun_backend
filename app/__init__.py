@@ -10,6 +10,7 @@ db: SQLAlchemy = SQLAlchemy()
 login_manager: LoginManager = LoginManager()
 
 
+# TODO https://github.com/mbr/flask-kvsession
 def create_app(config_name: str) -> Flask:
     app: Flask = Flask(__name__)
     app.config.from_object(config[config_name])
