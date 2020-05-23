@@ -32,3 +32,8 @@ class Complete(db.Model):
 
     def __repr__(self) -> str:
         return f"<Complete {self.id}>"
+
+    @staticmethod
+    def add(user_id: str, practice_uuid: str) -> None:
+        db.session.add(Complete(user_id, practice_uuid))
+        db.session.commit()
