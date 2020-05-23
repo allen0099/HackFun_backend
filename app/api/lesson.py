@@ -1,7 +1,7 @@
 from flask import jsonify, make_response, Response, redirect, url_for, session
 
 from app.api import api
-from app.models import Lesson, Choose, Docker, Practice, Visited
+from app.models import Lesson, Choose, Docker, Practice, Visited, Complete
 
 
 @api.route("/lesson")
@@ -102,6 +102,11 @@ def get_practice(practice: Practice) -> dict:
                 "port": _docker.port
             }
 
+    uid: str = session.get("_user_id") or session.get("user_id")
+    solved: bool = False
+    if uid is not None:
+        solved = Complete.is_solved(uid, practice.uuid)
+
     return {
         "id": practice.id,
         "uuid": practice.uuid,
@@ -111,5 +116,6 @@ def get_practice(practice: Practice) -> dict:
         ],
         "type": practice.type,
         "choose": choose,
-        "docker": docker
+        "docker": docker,
+        "solved": solved
     }
