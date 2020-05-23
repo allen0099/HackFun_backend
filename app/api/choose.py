@@ -57,8 +57,8 @@ def redirect_root_choose() -> redirect:
 
 
 def _chk_input(_: dict) -> bool:
-    if _.get("id", None) is None:
+    if _.get("id", None) in [None, ""]:
         return False
-    if _.get("choose", None) is None:
+    if _.get("choose", None) in [None, ""]:
         return False
     return True

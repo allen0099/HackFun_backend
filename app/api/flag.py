@@ -51,8 +51,8 @@ def redirect_root_flag() -> redirect:
 
 
 def _chk_input(_: dict) -> bool:
-    if _.get("flag", None) is None:
+    if _.get("flag", None) in [None, ""]:
         return False
-    if _.get("id", None) is None:
+    if _.get("id", None) in [None, ""]:
         return False
     return True
