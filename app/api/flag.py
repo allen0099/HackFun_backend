@@ -13,36 +13,36 @@ from app.models import Flag
 @api.route("/flag", methods=["POST"])
 def root_flag() -> Response:
     if current_user.is_authenticated:
-        RESPONSE: dict = {
+        response: dict = {
             "ok": False,
             "result": ""
         }
         content: dict = request.json or dict()
-        if content.get("flag", None) == None:
-            RESPONSE["result"] = "Flag missing!"
-            return make_response(jsonify(RESPONSE), 400)
+        if content.get("flag", None) is None:
+            response["result"] = "Flag missing!"
+            return make_response(jsonify(response), 400)
         else:
             post_flag: str = content["flag"]
-        if content.get("uuid") == None:
-            RESPONSE["result"] = "UUID missing!"
-            return make_response(jsonify(RESPONSE), 400)
+        if content.get("uuid") is None:
+            response["result"] = "UUID missing!"
+            return make_response(jsonify(response), 400)
         else:
             post_uuid: str = content["uuid"]
 
         flag: Flag = Flag.query.filter_by(flag=post_flag).first()
         if flag is None or post_uuid != flag.docker.practice.uuid:
-            RESPONSE["result"] = "Invalid data!"
-            return make_response(jsonify(RESPONSE), 404)
+            response["result"] = "Invalid data!"
+            return make_response(jsonify(response), 404)
         else:
-            RESPONSE["ok"] = True
-            RESPONSE["result"] = "Valid data!"
-        RESPONSE["time"] = int(time.time())
+            response["ok"] = True
+            response["result"] = "Valid data!"
+        response["time"] = int(time.time())
         # TODO user check
         # TODO time record
         # TODO has done check
         # uid = session.get("_user_id")
 
-        return make_response(jsonify(RESPONSE))
+        return make_response(jsonify(response))
     else:
         return login_manager.unauthorized()
 

@@ -14,7 +14,7 @@ def root_choose(practice_id) -> Response:
     practice: Practice = Practice.query.filter_by(id=practice_id).first()
     choose: Choose = practice.choose.first_or_404()
     if current_user.is_authenticated:
-        RESPONSE: dict = {
+        response: dict = {
             "ok": False,
             "result": "Check your parameters and try again!"
         }
@@ -24,15 +24,15 @@ def root_choose(practice_id) -> Response:
         correct_ids: List[int] = [option.id for option in options]
         submitted_ids: List[int] = submitted.get("choose")
         if correct_ids == submitted_ids:
-            RESPONSE["ok"] = True
-            RESPONSE["result"] = "Success! You had submitted the correct answer!"
+            response["ok"] = True
+            response["result"] = "Success! You had submitted the correct answer!"
         else:
-            RESPONSE["ok"] = False
-            RESPONSE["result"] = "Wrong choice, check the choice and try again!"
-        RESPONSE["time"] = int(time.time())
+            response["ok"] = False
+            response["result"] = "Wrong choice, check the choice and try again!"
+        response["time"] = int(time.time())
         # TODO user check
         # TODO time record
         # TODO has done check
-        return make_response(jsonify(RESPONSE))
+        return make_response(jsonify(response))
     else:
         return login_manager.unauthorized()
