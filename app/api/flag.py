@@ -1,13 +1,11 @@
-# TODO avoid replay attack
-#   https://github.com/mbr/flask-kvsession
 import time
 
-from flask import jsonify, make_response, Response, redirect, url_for, request
+from flask import jsonify, make_response, Response, redirect, url_for, request, session
 from flask_login import current_user
 
 from app import login_manager
 from app.api import api
-from app.models import Flag
+from app.models import Flag, Complete
 
 
 @api.route("/flag", methods=["POST"])
@@ -17,6 +15,8 @@ def root_flag() -> Response:
             "ok": False,
             "result": ""
         }
+        uid: str = session.get("_user_id") or session.get("user_id")
+
         content: dict = request.json or dict()
         if content.get("flag", None) is None:
             response["result"] = "Flag missing!"
@@ -31,16 +31,14 @@ def root_flag() -> Response:
 
         flag: Flag = Flag.query.filter_by(flag=post_flag).first()
         if flag is None or post_uuid != flag.docker.practice.uuid:
-            response["result"] = "Invalid data!"
+            response["result"] = "Failed! Wrong flag submitted!"
             return make_response(jsonify(response), 404)
         else:
             response["ok"] = True
-            response["result"] = "Valid data!"
+            response["result"] = "Success!"
+
+            Complete.add(uid, post_uuid)
         response["time"] = int(time.time())
-        # TODO user check
-        # TODO time record
-        # TODO has done check
-        # uid = session.get("_user_id")
 
         return make_response(jsonify(response))
     else:
