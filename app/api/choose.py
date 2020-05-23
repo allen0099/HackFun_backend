@@ -25,10 +25,13 @@ def root_choose(practice_id) -> Response:
         correct_ids: List[int] = [option.id for option in options]
         submitted_ids: List[int] = submitted.get("choose")
         if correct_ids == submitted_ids:
-            response["ok"] = True
-            response["result"] = "Success! You had submitted the correct answer!"
-
-            Complete.add(uid, practice.uuid)
+            if not Complete.is_solved(uid, practice.uuid):
+                response["ok"] = True
+                response["result"] = "Success! You had submitted the correct answer!"
+                Complete.add(uid, practice.uuid)
+            else:
+                response["ok"] = True
+                response["result"] = "You had submitted the answer!"
         else:
             response["ok"] = False
             response["result"] = "Wrong choice, check the choice and try again!"

@@ -18,16 +18,12 @@ def root_flag() -> Response:
         uid: str = session.get("_user_id") or session.get("user_id")
 
         content: dict = request.json or dict()
-        if content.get("flag", None) is None:
-            response["result"] = "Flag missing!"
-            return make_response(jsonify(response), 400)
+
+        if _chk_input(content):
+            post_flag, post_uuid = content["flag"], content["uuid"]
         else:
-            post_flag: str = content["flag"]
-        if content.get("uuid") is None:
-            response["result"] = "UUID missing!"
+            response["result"] = "Parameters missing!"
             return make_response(jsonify(response), 400)
-        else:
-            post_uuid: str = content["uuid"]
 
         flag: Flag = Flag.query.filter_by(flag=post_flag).first()
         if flag is None or post_uuid != flag.docker.practice.uuid:
@@ -35,9 +31,11 @@ def root_flag() -> Response:
             return make_response(jsonify(response), 404)
         else:
             response["ok"] = True
-            response["result"] = "Success!"
-
-            Complete.add(uid, post_uuid)
+            if not Complete.is_solved(uid, post_uuid):
+                response["result"] = "Success!"
+                Complete.add(uid, post_uuid)
+            else:
+                response["result"] = "You had submitted the answer!"
         response["time"] = int(time.time())
 
         return make_response(jsonify(response))
@@ -48,3 +46,11 @@ def root_flag() -> Response:
 @api.route("/flag/", methods=["POST"])
 def redirect_root_flag() -> redirect:
     return redirect(url_for("api.root_flag"))
+
+
+def _chk_input(content: dict) -> bool:
+    if content.get("flag", None) is None:
+        return False
+    if content.get("uuid", None) is None:
+        return False
+    return True
