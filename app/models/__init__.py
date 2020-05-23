@@ -10,4 +10,5 @@ from .option import Option
 from .practice import Practice
 from .tab import Tab
 from .user import User
+from .vid_record import VidRecord
 from .visited import Visited

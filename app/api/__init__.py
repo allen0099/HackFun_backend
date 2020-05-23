@@ -8,3 +8,4 @@ from . import flag
 from . import lesson
 from . import profile
 from . import tab
+from . import video_log
