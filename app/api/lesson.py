@@ -1,7 +1,7 @@
 from flask import jsonify, make_response, Response, redirect, url_for, session
 
 from app.api import api
-from app.models import Lesson, Choose, Docker, Practice, Visited, Complete
+from app.models import Lesson, Choose, Docker, Practice, Visited, Complete, VidRecord
 
 
 @api.route("/lesson")
@@ -49,6 +49,8 @@ def search_lesson(lid: int) -> Response:
         .filter_by(course_id=lesson.course_id) \
         .filter_by(order_id=lesson.order_id + 1).first().id
 
+    record: VidRecord = None if uid is None else VidRecord.query.filter_by(lesson_id=lid).filter_by(user_id=uid).first()
+
     response["lesson"]: dict = {
         "id": lesson.id,
         "uuid": lesson.uuid,
@@ -58,7 +60,9 @@ def search_lesson(lid: int) -> Response:
         "next": _next,
         "index": lesson.order_id,
         "description": lesson.desc,
-        "vid_url": lesson.vid_url
+        "vid_url": lesson.vid_url,
+        "vid_sec": None if uid or record is None else record.time,
+        "vid_progress": None if uid or record is None else record.progress
     }
 
     practices: list = []

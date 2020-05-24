@@ -24,7 +24,7 @@ def root_profile() -> Response:
         .all()
 
     latest: List[Visited] = []
-    lesson_ids: List[str] = []
+    lesson_ids: List[int] = []
     for _ in all_visits:
         if _.lesson_id not in lesson_ids:
             lesson_ids.append(_.lesson_id)
