@@ -61,7 +61,7 @@ def search_lesson(lid: int) -> Response:
         "index": lesson.order_id,
         "description": lesson.desc,
         "vid_url": lesson.vid_url,
-        "vid_sec": None if uid or record is None else record.time,
+        "vid_sec": 0 if uid or record is None else record.time,
         "vid_progress": None if uid or record is None else record.progress
     }
 
