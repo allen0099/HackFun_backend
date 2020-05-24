@@ -62,7 +62,7 @@ def search_lesson(lid: int) -> Response:
         "description": lesson.desc,
         "vid_url": lesson.vid_url,
         "vid_sec": 0 if uid or record is None else record.time,
-        "vid_progress": None if uid or record is None else record.progress
+        "vid_progress": 0 if uid or record is None else record.progress
     }
 
     practices: list = []
