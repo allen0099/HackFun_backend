@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy.orm import relationship
 
 from app import db
@@ -27,9 +29,10 @@ class Docker(db.Model):
         db.Integer,
         nullable=False
     )
-    image: str = db.Column(
+    file_hash: str = db.Column(
         db.Text
     )
+    # image restart? Not today
 
     flag: relationship = db.relationship(
         "Flag",
