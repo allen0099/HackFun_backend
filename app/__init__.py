@@ -4,10 +4,11 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
 from app.config import config
+from app.misc.binarychecker import BinaryChecker
 
 db: SQLAlchemy = SQLAlchemy()
-
 login_manager: LoginManager = LoginManager()
+binary_check: BinaryChecker = BinaryChecker()
 
 
 # TODO https://github.com/mbr/flask-kvsession
@@ -17,6 +18,7 @@ def create_app(config_name: str) -> Flask:
 
     db.init_app(app)
     login_manager.init_app(app)
+    binary_check.init_app(app)
 
     CORS(app, origins="*", supports_credentials=True)
 

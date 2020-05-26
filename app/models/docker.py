@@ -56,3 +56,12 @@ class Docker(db.Model):
 
     def __repr__(self) -> str:
         return f"<Docker {self.id}>"
+
+    @staticmethod
+    def get_binary_list() -> List[str]:
+        _query: list = Docker.query.with_entities(Docker.file_hash).all()
+        _list: List[str] = []
+        for _ in _query:
+            if _.file_hash != None:
+                _list.append(_.file_hash)
+        return _list
