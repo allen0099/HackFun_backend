@@ -4,6 +4,7 @@ api: Blueprint = Blueprint("api", __name__, url_prefix="/api")
 
 from . import choose
 from . import course
+from . import download
 from . import flag
 from . import lesson
 from . import profile
