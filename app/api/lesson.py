@@ -103,7 +103,8 @@ def get_practice(practice: Practice) -> dict:
             docker = {
                 "description": _docker.desc,
                 "url": _docker.url,
-                "port": _docker.port
+                "port": _docker.port,
+                "file_hash": _docker.file_hash
             }
 
     uid: str = session.get("_user_id") or session.get("user_id")
